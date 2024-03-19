@@ -127,7 +127,7 @@ const QuizSlug = () => {
 
       {store.showFinalScore !== true && store.started === true ? (
         <p className={styles.currentQuestion} style={{ zIndex: -1 }}>
-          {store.currentQuestion}/{store.questions.length}
+          {store.currentQuestion + 1}/{store.questions.length}
         </p>
       ) : null}
 
