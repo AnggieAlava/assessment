@@ -30,7 +30,7 @@ const QuizSlug = () => {
   const { academy, slug, time, score, debug, token=null, ua_token, isAnon=false, campaign, medium, source, email=null, layout } = router.query; // Asegúrate de obtener 'time' del query string
 
   const createUserAssessment = async (formData=null) => {
-    if(isAnon) return false;
+    if(isAnon && isAnon != "false") return false;
     try {
       
       let headers = {}
@@ -64,7 +64,7 @@ const QuizSlug = () => {
     }
   }
   const loadUserAssessment = async () => {
-    if(isAnon) return false;
+    if(isAnon && isAnon != "false") return false;
     try {
       
       let headers = {}
@@ -87,7 +87,7 @@ const QuizSlug = () => {
   }
 
   const finishUserAssessment = async () => {
-    if(isAnon) return false;
+    if(isAnon && isAnon != "false") return false;
     try {
       
       let headers = {}
@@ -117,7 +117,7 @@ const QuizSlug = () => {
   }
 
   const createUserAnswer = async (option) => {
-    if(isAnon) return false;
+    if(isAnon && isAnon != "false") return false;
     try {
       let headers = {}
       if(token) headers['Authorization'] = `Token ${token}`;
@@ -276,7 +276,7 @@ const QuizSlug = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      {!token && !userAssessment && !isAnon ? 
+      {!token && !userAssessment && !(isAnon && isAnon != "false") ? 
         <LeadForm onSubmit={data => createUserAssessment(data)} />
         :
         <Fragment>
