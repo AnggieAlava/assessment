@@ -93,7 +93,7 @@ const QuizSlug = () => {
       let headers = {}
       if(token) headers['Authorization'] = `Token ${token}`;
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_HOST}/assessment/user/assessment/${userAssessment.token}`, {
-        method: 'POST',
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           ...headers
