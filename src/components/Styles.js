@@ -4,7 +4,6 @@ const Styles = ({ base64CSS }) => {
     useEffect(() => {
         // Step 1: Decode the Base64 CSS
         const decodedCSS = atob(base64CSS);
-        console.log("decoded css", decodedCSS)
         // Step 2: Create a style element
         const styleElement = document.createElement('style');
         styleElement.type = 'text/css';
@@ -19,7 +18,6 @@ const Styles = ({ base64CSS }) => {
         };
     }, [base64CSS]); // Dependency array to reapply styles if base64CSS changes
     
-    console.log("decoded css", base64CSS)
     return null; // This component does not render anything
 };
 
