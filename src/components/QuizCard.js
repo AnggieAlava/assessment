@@ -4,12 +4,12 @@ import styles from "@styles/Home.module.css";
 import checkBoxStyle from "@styles/multiselect.module.css";
 import { useContext } from "react";
 import { types } from "@store/reducer";
-import Answer from "../Answer"
+import Answer from "./Answer"
 import Link from "next/link";
 import { useRouter } from 'next/router'
 import { getQueryString, updateQueryStringWithCurrentURLParams } from "src/util";
 
-const QuizCard = (props) => {
+const QuizCard = ({ onAnswer, onFinish, ...props }) => {
   const [currentTresh, setCurrentTresh] = useState(null);
   const [store, dispatch] = useContext(StoreContext);
   const questions = store.questions
@@ -24,7 +24,7 @@ const QuizCard = (props) => {
 
   // console.log("CURRENT_QUESTIONS", questions)
   const verifyAnswer = (score) => {
-    if (score === 1) {
+    if (score > 0) {
 
       dispatch({
         type: types.setGetCorrect,
@@ -86,8 +86,9 @@ const QuizCard = (props) => {
     })
   }
 
-  const selectAnswer = (score) => {
-    getResponse(score)
+  const selectAnswer = (option) => {
+    onAnswer(option)
+    getResponse(option.score)
     if (currentQuestion < questions.length - 1) {
       dispatch({
         type: types.setCurrentQuestion
@@ -118,6 +119,9 @@ const QuizCard = (props) => {
   }, [questions])
 
   useEffect(() => {
+    if(store.showFinalScore){
+      onFinish();
+    }
     if (store.showFinalScore && store.tresholds.length > 0) {
       let achieved = null;
       store.tresholds.map((tresh) => {
@@ -132,16 +136,14 @@ const QuizCard = (props) => {
     let verifyError = store.multiAnswerSelection.find(score => score === 0)
 
     if (verifyError === 0) {
-      // console.log("INCORRECT", verifyError)
       return selectAnswer(verifyError)
     } else {
-      // console.log("CORRECT", 1)
       return selectAnswer(1)
     }
   }
 
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} quiz-card`}>
 
       {store.getAnswer === true && store.isInstantFeedback ? <Answer /> : null}
 
@@ -159,8 +161,8 @@ const QuizCard = (props) => {
                     <button
                       key={option.id}
                       name='isSelect'
-                      onClick={() => selectAnswer(option.score)}
-                      className={styles.quiz_card}>
+                      onClick={() => selectAnswer(option)}
+                      className={styles.quiz_card_option}>
                       <h2 className={styles.buttonTextSelector}>
                         {option.title}
                       </h2>

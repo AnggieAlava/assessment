@@ -1,0 +1,29 @@
+.backdrop{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Ensure the parent has a defined height */
+}
+
+.form{
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    max-width: 400px;
+}
+
+.form > *{
+    margin: 5px 0px;
+}
+
+.form input, .form button{
+    padding: 5px;
+    font-size: 24px;
+    border-radius: 5px;
+}
+
+.form button{ cursor:pointer }
+
+.alert{ padding: 10px; border-radius: 5px; }
+.alert-error{ background: rgb(255, 183, 183); }
+.alert-info{ background: rgb(183, 217, 255); }

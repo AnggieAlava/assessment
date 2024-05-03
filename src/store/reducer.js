@@ -1,3 +1,5 @@
+import { startTransition } from "react"
+
 export const types = {
   setScore: "score - puntos",
   setQuesions: "quiz - prueba",
@@ -66,7 +68,8 @@ const storeReducer = (state, action) => {
     case types.setCurrentQuestion:
       return {
         ...state,
-        currentQuestion: state.currentQuestion + 1
+        currentQuestion: action.payload || state.currentQuestion + 1,
+        started: true
       }
     case types.setSelectedAnswer:
       return {

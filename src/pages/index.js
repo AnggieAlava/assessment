@@ -70,7 +70,7 @@ export default function Home({ quizList }) {
           ) : (
             quizList.map((quiz, i) => {
               return (
-                <Link key={i} href={`/quiz/${quiz.slug}?`+((debug == "true") ? "debug=true" : "")} passHref>
+                <Link key={i} href={`/quiz/${quiz.slug}?isAnon=true&`+((debug == "true") ? "debug=true" : "")} passHref>
                   <div className={styles.card}>
                     <h2>{quiz.slug} &rarr;</h2>
                     <p>{quiz.title}</p>

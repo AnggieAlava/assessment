@@ -32,6 +32,9 @@ function updateQueryStringWithCurrentURLParams(targetUrl) {
     currentUrlParams.forEach((value, key) => {
       targetUrlObj.searchParams.set(key, value);
     });
+
+    // Delete ua_token because its probably going to forward to another quiz / user assessment
+    targetUrlObj.searchParams.delete('ua_token');
     return targetUrlObj.toString();
   }
 }
