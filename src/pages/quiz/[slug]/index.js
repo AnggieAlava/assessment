@@ -225,7 +225,7 @@ const QuizSlug = () => {
 
         if(index > 0) dispatch({
           type: types.setCurrentQuestion,
-          score: userAssessment.summary.live_score,
+          score: userAssessment.summary?.live_score,
           payload: index
         });
       }
