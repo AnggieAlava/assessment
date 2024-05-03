@@ -58,6 +58,10 @@ const updateQueystring = (newParams) => {
   history.pushState({}, '', currentUrl.toString());
 }
 
+function capitalize(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
 export {
-  getQueryString, updateQueryStringWithCurrentURLParams, updateQueystring,
+  getQueryString, updateQueryStringWithCurrentURLParams, updateQueystring, capitalize
 }

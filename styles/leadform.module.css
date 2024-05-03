@@ -17,12 +17,17 @@
 }
 
 .form input, .form button{
-    padding: 5px;
+    padding: 10px;
     font-size: 24px;
     border-radius: 5px;
+    border: 1px solid #eaeaea;
 }
 
-.form button{ cursor:pointer }
+.form button{ 
+    cursor:pointer;
+    background: #0070f3;
+    color: white;
+}
 
 .alert{ padding: 10px; border-radius: 5px; }
 .alert-error{ background: rgb(255, 183, 183); }

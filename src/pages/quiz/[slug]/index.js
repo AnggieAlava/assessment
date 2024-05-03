@@ -14,7 +14,7 @@ const QuizSlug = () => {
   const [store, dispatch] = useContext(StoreContext);
   const [quiz, setQuiz] = useState(null);
   const [loading, setLoading] = useState(null);
-  const [layoutStyles, setLayoutStyles] = useState(null);
+  const [layoutConfig, setLayoutConfig] = useState(null);
   const [toggleTimer, setToggleTimer] = useState(true);
   const [toggleFinalScore, setToggleFinalScore] = useState(true);
   const [userAssessment, setUserAssessment] = useState(null);
@@ -188,7 +188,7 @@ const QuizSlug = () => {
     const getLayout = async () => {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_HOST}/assessment/layout/${layout}`);
       const data = await res.json();
-      setLayoutStyles(data);
+      setLayoutConfig(data);
     }
     if(layout) getLayout();
   }, [layout]);
@@ -225,6 +225,7 @@ const QuizSlug = () => {
 
         if(index > 0) dispatch({
           type: types.setCurrentQuestion,
+          score: userAssessment.total_score,
           payload: index
         });
       }
@@ -288,7 +289,7 @@ const QuizSlug = () => {
 
   return (
     <div className={styles.container}>
-      {layoutStyles && <Styles base64CSS={layoutStyles.additional_styles} />}
+      {layoutConfig && layoutConfig.additional_styles && <Styles base64CSS={layoutConfig.additional_styles} />}
       <Head>
         <title>{quiz?.title}</title>
         <meta name="description" content={quiz?.title} />
@@ -296,7 +297,7 @@ const QuizSlug = () => {
       </Head>
 
       {!token && !userAssessment && !(isAnon && isAnon != "false") ? 
-        <LeadForm onSubmit={data => createUserAssessment(data)} />
+        <LeadForm onSubmit={data => createUserAssessment(data)} extraFields={layoutConfig?.variables?.fields} />
         :
         <Fragment>
           {store.showFinalScore !== true && store.started === true ? (
