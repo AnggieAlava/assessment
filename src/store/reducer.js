@@ -69,6 +69,7 @@ const storeReducer = (state, action) => {
       return {
         ...state,
         currentQuestion: action.payload || state.currentQuestion + 1,
+        score: action.score || state.score,
         started: true
       }
     case types.setSelectedAnswer:
