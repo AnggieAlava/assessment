@@ -23,7 +23,7 @@ const LeadForm = ({ onSubmit }) => {
 
     const [data, setData] = useState({});
     const [alert, setAlert] = useState(false);
-    console.log("data", data)
+
     return <div className={`${styles.backdrop} quiz-backdrop`}>
         <form className={styles.form} onSubmit={(e) => {
             e.preventDefault();

@@ -5,17 +5,10 @@ import { useRouter } from "next/router";
 import styles from "@styles/Home.module.css";
 import QuizCard from "src/components/QuizCard";
 import Styles from "src/components/Styles";
-import { getSession, setSession, destroySession } from "../../../store/session";
+import { setSession } from "src/store/session";
 import LeadForm from "src/components/LeadForm.js";
 import Head from "next/head";
-import { isWindow } from "src/util";
-
-const updateQueystring = (key, val) => {
-  const currentUrl = new URL(window.location);
-  const searchParams = currentUrl.searchParams;
-  searchParams.set(key, val); // 'newParam' is the query parameter you want to add or modify
-  history.pushState({}, '', currentUrl.toString());
-}
+import { isWindow, updateQueystring } from "src/util";
 
 const QuizSlug = () => {
   const [store, dispatch] = useContext(StoreContext);
@@ -28,6 +21,9 @@ const QuizSlug = () => {
   const intervalRef = useRef(null);
   const router = useRouter();
   const { academy, slug, time, score, debug, token=null, ua_token, isAnon=false, campaign, medium, source, email=null, layout } = router.query; // Asegúrate de obtener 'time' del query string
+  
+  // If coming from a previous assessment, here we have the conversion info
+  const {  leadData } = router.query;
 
   const createUserAssessment = async (formData=null) => {
     if(isAnon && isAnon != "false") return false;
@@ -56,7 +52,17 @@ const QuizSlug = () => {
   
       const data = await response.json();
       setUserAssessment(data);
-      updateQueystring('ua_token', data.token)
+
+      // keep user assessment session info on the URL to persist on window refresh
+      updateQueystring({
+        'ua_token': data.token,
+        //remove lead information from queystring because it was already included in the user assessment session
+        'leadData': null
+      });
+      
+      //include in the session the formData just in case it will be passed to the next assessment (chained assessments)
+      if(formData) setSession({ formData })
+
       return data;
     } catch (error) {
       console.error('Failed to create user assessment:', error);
@@ -77,6 +83,7 @@ const QuizSlug = () => {
   
       const data = await response.json();
       setUserAssessment(data);
+      if (data?.academy?.id) getThreshholds(data.academy.id);
       setLoading(false);
       return data;
     } catch (error) {
@@ -142,9 +149,35 @@ const QuizSlug = () => {
     }
   }
 
+  const getThreshholds = async (_academy) => {
+
+    const resThresh = await fetch(
+      `${process.env.NEXT_PUBLIC_API_HOST}/assessment/${slug}/threshold${_academy ? `?academy=${_academy}` : ""
+      }`
+    );
+
+    const dataThresh = await resThresh.json();
+
+    const compare = (a, b) => {
+      if (a.score_threshold < b.score_threshold) {
+        return -1;
+      }
+      if (a.score_threshold > b.score_threshold) {
+        return 1;
+      }
+      return 0;
+    };
+
+    const thres = dataThresh.sort(compare);
+
+    dispatch({
+      type: types.setTresholds,
+      payload: thres,
+    });
+  }
+
   useEffect(() => {
     if (isWindow) {
-      setSession({ academy, source, campaign, medium, email });
       if (time && time.toLowerCase() === "false") setToggleTimer(false);
       if (score && score.toLowerCase() === "false") setToggleFinalScore(false);
     }
@@ -165,6 +198,16 @@ const QuizSlug = () => {
     if(quiz){
       if(ua_token) loadUserAssessment();
       else if(token) createUserAssessment();
+      else if(leadData){
+        try{
+          const _formData = JSON.parse(atob(leadData));
+          createUserAssessment(_formData);
+        }
+        catch(e){
+          console.error("Error loading information from previous assessment", e)
+          // setLoading({ messa})
+        }
+      }
     }
 
   }, [quiz]);
@@ -213,35 +256,8 @@ const QuizSlug = () => {
       });
     }
 
-    const getThreshholds = async () => {
-
-      const resThresh = await fetch(
-        `${process.env.NEXT_PUBLIC_API_HOST}/assessment/${slug}/threshold${academy ? `?academy=${academy}` : ""
-        }`
-      );
-
-      const dataThresh = await resThresh.json();
-
-      const compare = (a, b) => {
-        if (a.score_threshold < b.score_threshold) {
-          return -1;
-        }
-        if (a.score_threshold > b.score_threshold) {
-          return 1;
-        }
-        return 0;
-      };
-
-      const thres = dataThresh.sort(compare);
-
-      dispatch({
-        type: types.setTresholds,
-        payload: thres,
-      });
-    }
-
     if (slug) getInfo();
-    if (slug && academy) getThreshholds();
+    if (slug && academy) getThreshholds(academy);
   }, [slug, academy]);
 
   const handleStartQuiz = () => {

@@ -5,13 +5,14 @@ import checkBoxStyle from "@styles/multiselect.module.css";
 import { useContext } from "react";
 import { types } from "@store/reducer";
 import Answer from "./Answer"
-import Link from "next/link";
+import { getSession, setSession, destroySession } from "src/store/session";
 import { useRouter } from 'next/router'
 import { getQueryString, updateQueryStringWithCurrentURLParams } from "src/util";
 
 const QuizCard = ({ onAnswer, onFinish, ...props }) => {
   const [currentTresh, setCurrentTresh] = useState(null);
   const [store, dispatch] = useContext(StoreContext);
+  const session = getSession();
   const questions = store.questions
   const currentQuestion = store.currentQuestion
   const router = useRouter()
@@ -219,11 +220,6 @@ const QuizCard = ({ onAnswer, onFinish, ...props }) => {
         </>
       ) : (
         <>
-          {/* <Link href={"/"} >
-       <a className={styles.backToHome}>
-        Back to Home
-      </a> 
-      </Link> */}
 
           {questions.length === 0 && (
             <>
@@ -259,7 +255,14 @@ const QuizCard = ({ onAnswer, onFinish, ...props }) => {
                   />
 
 
-                  <a id="continueBtn" className={styles.continueBtn} href={updateQueryStringWithCurrentURLParams(currentTresh?.success_next || store.tresholds[0].fail_next)} target="_parent">
+                  <a 
+                    id="continueBtn" 
+                    className={styles.continueBtn} 
+                    href={updateQueryStringWithCurrentURLParams(
+                      currentTresh?.success_next || store.tresholds[0].fail_next, 
+                      { leadData: session && session.formData ? btoa(JSON.stringify(session.formData)) : undefined }
+                    )} 
+                    target="_parent">
                     Continue to Next Step
                   </a>
                 </>

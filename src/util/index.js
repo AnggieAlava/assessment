@@ -4,7 +4,7 @@ const getQueryString = (key, def) => {
   return urlParams && (urlParams.get(key) || def);
 };
 
-function updateQueryStringWithCurrentURLParams(targetUrl) {
+function updateQueryStringWithCurrentURLParams(targetUrl, aditionalParams={}) {
 
   if(!window || !targetUrl) return targetUrl;
   
@@ -22,6 +22,10 @@ function updateQueryStringWithCurrentURLParams(targetUrl) {
       finalQueryString.set(key, value);
     });
 
+    // if there is any aditional params to add
+    Object.keys(aditionalParams).forEach(key => finalQueryString.set(key, aditionalParams[key]));
+
+    finalQueryString.delete('ua_token');
     // Reconstruct the target URL with updated query params
     let updatedUrl = `${path}?${finalQueryString.toString()}`;
     return updatedUrl;
@@ -33,12 +37,27 @@ function updateQueryStringWithCurrentURLParams(targetUrl) {
       targetUrlObj.searchParams.set(key, value);
     });
 
+    // if there is any aditional params to add
+    Object.keys(aditionalParams).forEach(key => targetUrlObj.searchParams.set(key, aditionalParams[key]));
+
     // Delete ua_token because its probably going to forward to another quiz / user assessment
     targetUrlObj.searchParams.delete('ua_token');
     return targetUrlObj.toString();
   }
 }
 
+const updateQueystring = (newParams) => {
+  const currentUrl = new URL(window.location);
+  const searchParams = currentUrl.searchParams;
+
+  Object.keys(newParams).forEach(key => {
+    if(!newParams[key]) searchParams.delete(key);
+    else searchParams.set(key, newParams[key]); // 'newParam' is the query parameter you want to add or modify
+  })
+  
+  history.pushState({}, '', currentUrl.toString());
+}
+
 export {
-  getQueryString, updateQueryStringWithCurrentURLParams,
+  getQueryString, updateQueryStringWithCurrentURLParams, updateQueystring,
 }
