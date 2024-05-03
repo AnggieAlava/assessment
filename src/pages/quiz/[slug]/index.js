@@ -175,13 +175,16 @@ const QuizSlug = () => {
 
       // set current question position or index
       let index = store.questions.findIndex(q => q.id == userAssessment.last_answer?.question?.id) + 1;
-      if(store.questions[index].position !== null) index = store.questions[index].position + 1;
-      console.log("current index", index)
 
-      if(index > 0) dispatch({
-        type: types.setCurrentQuestion,
-        payload: index
-      })
+      if(index >= store.questions.length) setLoading({ message: "All the assessment questions have been answered" });
+      else{
+        if(store.questions[index].position !== null) index = store.questions[index].position + 1;
+
+        if(index > 0) dispatch({
+          type: types.setCurrentQuestion,
+          payload: index
+        });
+      }
     }
 
   }, [userAssessment]);
