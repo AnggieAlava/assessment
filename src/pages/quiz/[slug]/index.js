@@ -156,24 +156,29 @@ const QuizSlug = () => {
       }`
     );
 
-    const dataThresh = await resThresh.json();
+    const payload = await resThresh.json();
+    if (resThresh.status < 400){
+      const compare = (a, b) => {
+        if (a.score_threshold < b.score_threshold) {
+          return -1;
+        }
+        if (a.score_threshold > b.score_threshold) {
+          return 1;
+        }
+        return 0;
+      };
+  
+      const thres = payload.sort(compare);
+  
+      dispatch({
+        type: types.setTresholds,
+        payload: thres,
+      });
+    }
+    else{
+      setLoading({ message: payload?.detail || payload?.details || "Error loading assessment thresholds" });
+    }
 
-    const compare = (a, b) => {
-      if (a.score_threshold < b.score_threshold) {
-        return -1;
-      }
-      if (a.score_threshold > b.score_threshold) {
-        return 1;
-      }
-      return 0;
-    };
-
-    const thres = dataThresh.sort(compare);
-
-    dispatch({
-      type: types.setTresholds,
-      payload: thres,
-    });
   }
 
   useEffect(() => {
@@ -243,18 +248,20 @@ const QuizSlug = () => {
       );
 
       const data = await res.json();
-      setQuiz(data);
-      setLoading(null)
-
-      dispatch({
-        type: types.setQuesions,
-        payload: data.questions,
-      });
-
-      dispatch({
-        type: types.setIsInstantFeedback,
-        payload: data.is_instant_feedback,
-      });
+      if(res.status < 400){
+        setQuiz(data);
+        setLoading(null)
+  
+        dispatch({
+          type: types.setQuesions,
+          payload: data.questions,
+        });
+  
+        dispatch({
+          type: types.setIsInstantFeedback,
+          payload: data.is_instant_feedback,
+        });
+      }
     }
 
     if (slug) getInfo();
