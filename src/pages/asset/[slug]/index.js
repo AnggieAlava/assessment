@@ -23,7 +23,7 @@ export async function getServerSideProps(context) {
     
     if (!res.ok) {
       const errorPayload = await res.json();
-      console.log("errorPayload", errorPayload);
+
       return {
         props: {
           error: errorPayload.detail || errorPayload.error || 'An error occurred',
@@ -56,7 +56,7 @@ export async function getServerSideProps(context) {
       },
     };
   } catch (error) {
-    console.error('Error fetching asset data:', error);
+    
     return {
       props: {
         error: 'An error occurred while fetching the data.',
