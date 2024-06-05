@@ -41,10 +41,6 @@ export const initialStore = {
   }
 }
 
-function rand(min, max) { // min and max included 
-  return Math.floor(Math.random() * (max - min + 1) + min);
-}
-
 const storeReducer = (state, action) => {
   switch (action.type) {
     case types.setStarted:
@@ -115,14 +111,7 @@ const storeReducer = (state, action) => {
 
       return {
         ...state,
-        questions: action.payload.map(q => ({
-          ...q,
-          position: q.position || rand(0,20),
-          options: q.options.map(a => ({
-            ...a,
-            position: a.position || rand(0,20)
-          }))
-        }))
+        questions: action.payload
       }
 
     case types.setFinalScore:

@@ -4,6 +4,10 @@ const getQueryString = (key, def) => {
   return urlParams && (urlParams.get(key) || def);
 };
 
+function rand(min, max) { // min and max included 
+  return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
 function updateQueryStringWithCurrentURLParams(targetUrl, aditionalParams={}) {
 
   if(!window || !targetUrl) return targetUrl;
@@ -63,5 +67,5 @@ function capitalize(string) {
 }
 
 export {
-  getQueryString, updateQueryStringWithCurrentURLParams, updateQueystring, capitalize
+  getQueryString, updateQueryStringWithCurrentURLParams, updateQueystring, capitalize, rand
 }

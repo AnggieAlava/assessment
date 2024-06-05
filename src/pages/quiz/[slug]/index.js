@@ -8,7 +8,7 @@ import Styles from "src/components/Styles";
 import { setSession } from "src/store/session";
 import LeadForm from "src/components/LeadForm.js";
 import Head from "next/head";
-import { isWindow, updateQueystring } from "src/util";
+import { isWindow, updateQueystring, rand } from "src/util";
 
 const QuizSlug = () => {
   const [store, dispatch] = useContext(StoreContext);
@@ -254,7 +254,14 @@ const QuizSlug = () => {
   
         dispatch({
           type: types.setQuesions,
-          payload: data.questions,
+          payload: data.questions.map(q => ({
+            ...q,
+            position: q.position || rand(0,20),
+            options: q.options.map(a => ({
+              ...a,
+              position: a.position || rand(0,20)
+            }))
+          })),
         });
   
         dispatch({
