@@ -256,7 +256,7 @@ const QuizSlug = () => {
           type: types.setQuesions,
           payload: data.questions.map(q => ({
             ...q,
-            position: q.position || rand(0,20),
+            // position: q.position || rand(0,20),
             options: q.options.map(a => ({
               ...a,
               position: a.position || rand(0,20)
