@@ -155,7 +155,7 @@ const QuizCard = ({ onAnswer, onFinish, ...props }) => {
           </h1>
 
           <div className={styles.quiz_grid}>
-            {Array.isArray(questions[currentQuestion].options) && questions[currentQuestion].options.map((option, i) => {
+            {Array.isArray(questions[currentQuestion].options) && questions[currentQuestion].options.sort((a,b) => a.position > b.position ? 1 : -1).map((option, i) => {
               return (
                 <Fragment key={i}  >
                   {questions[currentQuestion].question_type === "SELECT" ? (
@@ -167,7 +167,10 @@ const QuizCard = ({ onAnswer, onFinish, ...props }) => {
                       <h2 className={styles.buttonTextSelector}>
                         {option.title}
                       </h2>
-                      {props.debug && <span className={styles.debugScore}>{option.score}</span>}
+                      {props.debug && <div className={styles.debugScore}>
+                          <p className="m-0 p-0">Score: {option.score}</p>
+                          <p className="m-0 p-0">Pos: {option.position}</p>
+                        </div>}
                     </button>
                   ) : questions[currentQuestion].question_type === "SELECT_MULTIPLE" ? (
                     <>
