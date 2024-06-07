@@ -151,11 +151,12 @@ const QuizCard = ({ onAnswer, onFinish, ...props }) => {
       {store.showFinalScore === false && questions.length > 0 ? (
         <>
           <h1 className={styles.quiz_title_card}>
-            {questions[currentQuestion].title}
+            {questions[currentQuestion].title} 
+            {props.debug && <div className={styles.debugScore}>Pos: {questions[currentQuestion].position}</div>}
           </h1>
 
           <div className={styles.quiz_grid}>
-            {Array.isArray(questions[currentQuestion].options) && questions[currentQuestion].options.sort((a,b) => a.position > b.position ? 1 : -1).map((option, i) => {
+            {Array.isArray(questions[currentQuestion].options) && questions[currentQuestion].options.map((option, i) => {
               return (
                 <Fragment key={i}  >
                   {questions[currentQuestion].question_type === "SELECT" ? (

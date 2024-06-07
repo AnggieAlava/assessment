@@ -254,14 +254,14 @@ const QuizSlug = () => {
   
         dispatch({
           type: types.setQuesions,
-          payload: data.questions.map(q => ({
+          payload: data.questions.map((q,i) => ({
             ...q,
-            // position: q.position || rand(0,20),
+            position: q.position || i,
             options: q.options.map(a => ({
               ...a,
               position: a.position || rand(0,20)
-            }))
-          })),
+            })).sort((a,b) => a.position > b.position ? 1 : -1)
+          })).sort((a,b) => a.position > b.position ? 1 : -1),
         });
   
         dispatch({
