@@ -229,7 +229,7 @@ const QuizSlug = () => {
       const thres = payload.sort(compare);
 
       dispatch({
-        type: types.setThresholds,
+        type: types.setTresholds,
         payload: thres,
       });
     } else {
@@ -248,7 +248,17 @@ const QuizSlug = () => {
     );
 
     const payload = await resThresh.json();
+
     if (resThresh.status < 400) {
+      let arrayPayload = [];
+
+      if (!Array.isArray(payload)) {
+        // Transforma el payload en un array
+        arrayPayload.push(payload);
+      } else {
+        arrayPayload = payload;
+      }
+
       const compare = (a, b) => {
         if (a.score_threshold < b.score_threshold) {
           return -1;
@@ -259,10 +269,10 @@ const QuizSlug = () => {
         return 0;
       };
 
-      const thres = payload.sort(compare);
+      const thres = arrayPayload.sort(compare);
 
       dispatch({
-        type: types.setThresholds,
+        type: types.setTresholds,
         payload: thres,
       });
     } else {
