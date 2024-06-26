@@ -35,7 +35,7 @@ const QuizSlug = () => {
     email = null,
     layout,
     threshold_id,
-    tag,
+    threshold_tag,
   } = router.query; // Asegúrate de obtener 'time' del query string
 
   // If coming from a previous assessment, here we have the conversion info
@@ -340,9 +340,9 @@ const QuizSlug = () => {
     };
 
     if (slug) getInfo();
-    if (slug && academy) getThreshholds({ academy, tag: tag || undefined });
+    if (slug && academy) getThreshholds({ academy, tag: threshold_tag || undefined });
     if (slug && threshold_id) getThresholdsById(threshold_id);
-  }, [slug, academy, threshold_id, tag]);
+  }, [slug, academy, threshold_id, threshold_tag]);
 
   const handleStartQuiz = () => {
     if (store.started) {
