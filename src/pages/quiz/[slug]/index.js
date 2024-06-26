@@ -244,7 +244,7 @@ const QuizSlug = () => {
 
   const getThresholdsByTag = async (threshold_tag) => {
     const resThresh = await fetch(
-      `${process.env.NEXT_PUBLIC_API_HOST}/assessment/${slug}?threshold_tag=${threshold_tag}`
+      `${process.env.NEXT_PUBLIC_API_HOST}/assessment/${slug}/threshold?tag=${threshold_tag}`
     );
 
     const payload = await resThresh.json();
