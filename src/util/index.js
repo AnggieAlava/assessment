@@ -66,6 +66,26 @@ function capitalize(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
+const parseQuery = (query, connector = false) => {
+  let queryString = '';
+  try {
+    Object.keys(query).forEach((key) => {
+      // query[key] !== undefined && query[key] !== null
+      if (query[key] !== undefined) {
+        if (connector) {
+          queryString += `&${key}=${query[key]}`;
+        }
+        if (!connector && query[key] !== undefined) {
+          queryString += `${queryString ? '&' : '?'}${key}=${query[key]}`;
+        }
+      }
+    });
+  } catch (e) {
+    return console.error('🛠️ parseQuerys error:', e);
+  }
+  return queryString;
+};
+
 export {
-  getQueryString, updateQueryStringWithCurrentURLParams, updateQueystring, capitalize, rand
+  getQueryString, updateQueryStringWithCurrentURLParams, updateQueystring, parseQuery, capitalize, rand
 }
