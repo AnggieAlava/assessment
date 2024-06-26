@@ -8,7 +8,7 @@ import Styles from "src/components/Styles";
 import { setSession } from "src/store/session";
 import LeadForm from "src/components/LeadForm.js";
 import Head from "next/head";
-import { isWindow, updateQueystring, rand } from "src/util";
+import { isWindow, updateQueystring, rand, parseQuery } from "src/util";
 
 const QuizSlug = () => {
   const [store, dispatch] = useContext(StoreContext);
@@ -174,11 +174,10 @@ const QuizSlug = () => {
     }
   };
 
-  const getThreshholds = async (_academy) => {
+  const getThreshholds = async (queryObject) => {
+    const qs = parseQuery(queryObject);
     const resThresh = await fetch(
-      `${process.env.NEXT_PUBLIC_API_HOST}/assessment/${slug}/threshold${
-        _academy ? `?academy=${_academy}` : ""
-      }`
+      `${process.env.NEXT_PUBLIC_API_HOST}/assessment/${slug}/threshold${qs}`
     );
 
     const payload = await resThresh.json();
@@ -212,39 +211,6 @@ const QuizSlug = () => {
   const getThresholdsById = async (threshold_id) => {
     const resThresh = await fetch(
       `${process.env.NEXT_PUBLIC_API_HOST}/assessment/${slug}/threshold/${threshold_id}`
-    );
-
-    const payload = await resThresh.json();
-    if (resThresh.status < 400) {
-      const compare = (a, b) => {
-        if (a.score_threshold < b.score_threshold) {
-          return -1;
-        }
-        if (a.score_threshold > b.score_threshold) {
-          return 1;
-        }
-        return 0;
-      };
-
-      const thres = payload.sort(compare);
-
-      dispatch({
-        type: types.setTresholds,
-        payload: thres,
-      });
-    } else {
-      setLoading({
-        message:
-          payload?.detail ||
-          payload?.details ||
-          "Error loading assessment thresholds",
-      });
-    }
-  };
-
-  const getThresholdsByTag = async (tag) => {
-    const resThresh = await fetch(
-      `${process.env.NEXT_PUBLIC_API_HOST}/assessment/${slug}/threshold?tag=${tag}`
     );
 
     const payload = await resThresh.json();
@@ -374,9 +340,8 @@ const QuizSlug = () => {
     };
 
     if (slug) getInfo();
-    if (slug && academy) getThreshholds(academy);
+    if (slug && academy) getThreshholds({ academy, tag: tag || undefined });
     if (slug && threshold_id) getThresholdsById(threshold_id);
-    if (slug && tag) getThresholdsByTag(tag);
   }, [slug, academy, threshold_id, tag]);
 
   const handleStartQuiz = () => {
