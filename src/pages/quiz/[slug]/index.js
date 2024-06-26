@@ -35,7 +35,7 @@ const QuizSlug = () => {
     email = null,
     layout,
     threshold_id,
-    threshold_tag,
+    tag,
   } = router.query; // Asegúrate de obtener 'time' del query string
 
   // If coming from a previous assessment, here we have the conversion info
@@ -242,23 +242,13 @@ const QuizSlug = () => {
     }
   };
 
-  const getThresholdsByTag = async (threshold_tag) => {
+  const getThresholdsByTag = async (tag) => {
     const resThresh = await fetch(
-      `${process.env.NEXT_PUBLIC_API_HOST}/assessment/${slug}?threshold_tag=${threshold_tag}`
+      `${process.env.NEXT_PUBLIC_API_HOST}/assessment/${slug}/threshold?tag=${tag}`
     );
 
     const payload = await resThresh.json();
-
     if (resThresh.status < 400) {
-      let arrayPayload = [];
-
-      if (!Array.isArray(payload)) {
-        // Transforma el payload en un array
-        arrayPayload.push(payload);
-      } else {
-        arrayPayload = payload;
-      }
-
       const compare = (a, b) => {
         if (a.score_threshold < b.score_threshold) {
           return -1;
@@ -269,7 +259,7 @@ const QuizSlug = () => {
         return 0;
       };
 
-      const thres = arrayPayload.sort(compare);
+      const thres = payload.sort(compare);
 
       dispatch({
         type: types.setTresholds,
@@ -280,7 +270,7 @@ const QuizSlug = () => {
         message:
           payload?.detail ||
           payload?.details ||
-          "Error loading assessment thresholds by tag",
+          "Error loading assessment thresholds",
       });
     }
   };
@@ -386,8 +376,8 @@ const QuizSlug = () => {
     if (slug) getInfo();
     if (slug && academy) getThreshholds(academy);
     if (slug && threshold_id) getThresholdsById(threshold_id);
-    if (slug && threshold_tag) getThresholdsByTag(threshold_tag);
-  }, [slug, academy, threshold_id, threshold_tag]);
+    if (slug && tag) getThresholdsByTag(tag);
+  }, [slug, academy, threshold_id, tag]);
 
   const handleStartQuiz = () => {
     if (store.started) {
