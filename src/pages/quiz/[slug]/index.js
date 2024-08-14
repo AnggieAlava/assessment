@@ -285,7 +285,8 @@ const QuizSlug = () => {
       let index =
         store.questions.findIndex(
           (q) => q.id == userAssessment.summary?.last_answer?.question?.id
-        ) + 1;
+        );
+      if(index < 0) index = 0
 
       if (index >= store.questions.length)
         setLoading({
