@@ -125,7 +125,7 @@ const QuizCard = ({ onAnswer, onFinish, ...props }) => {
     if (store.showFinalScore) {
       onFinish();
     }
-    if (store.showFinalScore && store.tresholds.length > 0) {
+    if (store.tresholds.length > 0) {
       let achieved = null;
       store.tresholds.map((tresh) => {
         if (store.score >= tresh.score_threshold) achieved = tresh;
@@ -144,6 +144,8 @@ const QuizCard = ({ onAnswer, onFinish, ...props }) => {
       return selectAnswer(1);
     }
   };
+
+  console.log("currentTresh", currentTresh, store.tresholds);
 
   return (
     <div className={`${styles.container} quiz-card`}>

@@ -103,7 +103,7 @@ const QuizSlug = () => {
 
       const data = await response.json();
       setUserAssessment(data);
-      if (data?.academy?.id) getThreshholds(data.academy.id);
+      //if (data?.academy?.id) getThreshholds(data.academy.id);
       setLoading(false);
       return data;
     } catch (error) {
@@ -175,6 +175,7 @@ const QuizSlug = () => {
   };
 
   const getThreshholds = async (queryObject) => {
+    console.log("fetching thresholds")
     const qs = parseQuery(queryObject);
     const resThresh = await fetch(
       `${process.env.NEXT_PUBLIC_API_HOST}/assessment/${slug}/threshold${qs}`
