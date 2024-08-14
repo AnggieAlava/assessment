@@ -103,7 +103,7 @@ const QuizSlug = () => {
 
       const data = await response.json();
       setUserAssessment(data);
-      //if (data?.academy?.id) getThreshholds(data.academy.id);
+      if (data?.academy?.id) getThreshholds({ academy: data.academy.id, tag: threshold_tag || undefined });
       setLoading(false);
       return data;
     } catch (error) {
