@@ -26,7 +26,8 @@ const QuizCard = ({ onAnswer, onFinish, ...props }) => {
     return store.templates[type][index];
   };
 
-  // console.log("CURRENT_QUESTIONS", questions)
+  console.log("Current Question Index:", currentQuestion);
+
   const verifyAnswer = (score) => {
     if (score > 0) {
       dispatch({

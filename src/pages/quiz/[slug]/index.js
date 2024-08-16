@@ -103,7 +103,11 @@ const QuizSlug = () => {
 
       const data = await response.json();
       setUserAssessment(data);
-      if (data?.academy?.id) getThreshholds({ academy: data.academy.id, tag: threshold_tag || undefined });
+      if (data?.academy?.id)
+        getThreshholds({
+          academy: data.academy.id,
+          tag: threshold_tag || undefined,
+        });
       setLoading(false);
       return data;
     } catch (error) {
@@ -175,7 +179,7 @@ const QuizSlug = () => {
   };
 
   const getThreshholds = async (queryObject) => {
-    console.log("fetching thresholds")
+    console.log("fetching thresholds");
     const qs = parseQuery(queryObject);
     const resThresh = await fetch(
       `${process.env.NEXT_PUBLIC_API_HOST}/assessment/${slug}/threshold${qs}`
@@ -282,21 +286,24 @@ const QuizSlug = () => {
   useEffect(() => {
     if (userAssessment) {
       // set current question position or index
-      let index =
-        store.questions.findIndex(
-          (q) => q.id == userAssessment.summary?.last_answer?.question?.id
-        );
-      if(index < 0) index = 0
+      let index = store.questions.findIndex(
+        (q) => q.id == userAssessment.summary?.last_answer?.question?.id
+      );
+      if (index < 0) index = 0;
 
       if (index >= store.questions.length)
         setLoading({
           message: "All the assessment questions have been answered",
         });
       else {
-        if (store.questions[index].position !== null)
-          index = store.questions[index].position + 1;
+        if (
+          store.questions[index].position !== null &&
+          store.questions[index].position > 0 // Esta condición asegura que solo se ajuste el índice si la posición es mayor que 0, previniendo un salto a una pregunta incorrecta.
+        )
+          index = store.questions[index].position + 1; // Esto ajusta el índice a la siguiente pregunta basada en la posición.
 
         if (index > 0)
+          // Solo se despacha la acción si el índice es mayor que 0, evitando un índice negativo o incorrecto.
           dispatch({
             type: types.setCurrentQuestion,
             score: userAssessment.summary?.live_score,
@@ -342,7 +349,8 @@ const QuizSlug = () => {
     };
 
     if (slug) getInfo();
-    if (slug && academy) getThreshholds({ academy, tag: threshold_tag || undefined });
+    if (slug && academy)
+      getThreshholds({ academy, tag: threshold_tag || undefined });
     if (slug && threshold_id) getThresholdsById(threshold_id);
   }, [slug, academy, threshold_id, threshold_tag]);
 
