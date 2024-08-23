@@ -10,6 +10,11 @@ import LeadForm from "src/components/LeadForm.js";
 import Head from "next/head";
 import { isWindow, updateQueystring, rand, parseQuery } from "src/util";
 
+import IconBase from "src/common/components/icons/IconBase";
+import Heading from "src/common/components/Heading";
+import { codeIconPath } from "src/common/components/paths/codeIcon";
+import { thumbDownIconPath } from "src/common/components/paths/thumbdown";
+
 const QuizSlug = () => {
   const [store, dispatch] = useContext(StoreContext);
   const [quiz, setQuiz] = useState(null);
@@ -286,7 +291,7 @@ const QuizSlug = () => {
         store.questions.findIndex(
           (q) => q.id == userAssessment.summary?.last_answer?.question?.id
         );
-      if(index < 0) index = 0
+      if (index < 0) index = 0
 
       if (index >= store.questions.length)
         setLoading({
@@ -403,34 +408,59 @@ const QuizSlug = () => {
             </p>
           ) : null}
 
-          {toggleTimer && (
-            <p className={styles.quiz_timer} style={{ zIndex: 99 }}>
-              {toggleTimer && `${store.timer} sec`}
-            </p>
-          )}
-
           <div className={styles.quiz_main}>
             {!store.started ? (
               <>
-                <h1 className={styles.quiz_title}>{quiz?.title}</h1>
+                <div className={styles.quiz_wrapper}>
+                  <Heading 
+                    className={styles.quiz_title}
+                    title={`Quizz: ${quiz?.title}`}
+                    iconPath={codeIconPath}
+                    iconWidth={32}
+                    iconHeight={23}
+                    iconViewBox={'0 0 24 15'}
+                    iconStyle={{ marginRight: "1.2rem" }}
+                  />
 
-                <div className={styles.grid_start}>
-                  <button
-                    id="startBtn"
-                    className={styles.start}
-                    onClick={handleStartQuiz}>
-                    <h2 style={{ margin: "5px 0" }}>Start</h2>
-                  </button>
+                  <p className={styles.quiz_description}>
+                    Welcome to an interactive quiz. Test your knowledge by answering simple selection questions and see your result at the end of the exercise.
+                  </p>
+
+                  <div className={styles.grid_start}>
+                    <button
+                      id="startBtn"
+                      className={styles.start}
+                      onClick={handleStartQuiz}>
+                      <h2 style={{ margin: "5px 0" }}>
+                        Start
+                        <span style={{ marginLeft: "1rem" }}> {"⟶"} </span>
+                      </h2>
+                    </button>
+                  </div>
                 </div>
+
               </>
             ) : (
-              <QuizCard
-                onAnswer={(option) => createUserAnswer(option)}
-                onFinish={() => finishUserAssessment()}
-                toggleFinalScore={toggleFinalScore}
-                toggleTimer={toggleTimer}
-                debug={debug == "true"}
-              />
+              <>
+                <Heading 
+                    className={styles.quiz_title}
+                    title={`Quizz: ${quiz?.title}`}
+                    iconPath={codeIconPath}
+                    iconWidth={32}
+                    iconHeight={23}
+                    iconViewBox={'0 0 24 15'}
+                    iconStyle={{ marginRight: "1.2rem" }}
+                  />
+                <div className={styles.quiz_wrapper}>
+                  <QuizCard
+                    onAnswer={(option) => createUserAnswer(option)}
+                    onFinish={() => finishUserAssessment()}
+                    toggleFinalScore={toggleFinalScore}
+                    toggleTimer={toggleTimer}
+                    debug={debug == "true"}
+                  />
+                </div>
+              </>
             )}
           </div>
         </Fragment>

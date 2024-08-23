@@ -11,6 +11,9 @@ import {
   getQueryString,
   updateQueryStringWithCurrentURLParams,
 } from "src/util";
+import IconBase from "src/common/components/icons/IconBase";
+import CircleProgressBar from "./CircleResultBar";
+import { timerIconPath } from "src/common/components/paths/timerIcon";
 
 const QuizCard = ({ onAnswer, onFinish, ...props }) => {
   const [currentTresh, setCurrentTresh] = useState(null);
@@ -145,71 +148,90 @@ const QuizCard = ({ onAnswer, onFinish, ...props }) => {
     }
   };
 
-  console.log("currentTresh", currentTresh, store.tresholds);
-
   return (
-    <div className={`${styles.container} quiz-card`}>
-      {store.getAnswer === true && store.isInstantFeedback ? <Answer /> : null}
+    <>
 
       {store.showFinalScore === false && questions.length > 0 ? (
         <>
-          <h1 className={styles.quiz_title_card}>
-            {questions[currentQuestion].title}
-            {props.debug && (
-              <div className={styles.debugScore}>
-                Pos: {questions[currentQuestion].position}
-              </div>
-            )}
-          </h1>
+          {store.getAnswer === true && store.isInstantFeedback ?
+            <Answer />
+            :
+            <>
+              <div className={styles.quiz_card_top_wrapper}>
 
-          <div className={styles.quiz_grid}>
-            {Array.isArray(questions[currentQuestion].options) &&
-              questions[currentQuestion].options.map((option, i) => {
-                return (
-                  <Fragment key={i}>
-                    {questions[currentQuestion].question_type === "SELECT" ? (
-                      <button
-                        key={option.id}
-                        name="isSelect"
-                        onClick={() => selectAnswer(option)}
-                        className={styles.quiz_card_option}>
-                        <h2 className={styles.buttonTextSelector}>
-                          {option.title}
-                        </h2>
-                        {props.debug && (
-                          <div className={styles.debugScore}>
-                            <p className="m-0 p-0">Score: {option.score}</p>
-                            <p className="m-0 p-0">Pos: {option.position}</p>
-                          </div>
+                <div>
+                  <p className={styles.progress}>{currentQuestion}/{questions.length}</p>
+                </div>
+
+                <h1 className={styles.quiz_card_title}>
+                  {questions[currentQuestion].title}
+                  {props.debug && (
+                    <div className={styles.debugScore}>
+                      Pos: {questions[currentQuestion].position}
+                    </div>
+                  )}
+                </h1>
+
+                <div>
+                  <p className={styles.timer}>
+                    <IconBase viewBox='0 0 24 15'>
+                      {timerIconPath}
+                    </IconBase>
+                    {store.timer} sec
+                  </p>
+                </div>
+              </div>
+
+              <div className={styles.quiz_grid}>
+                {Array.isArray(questions[currentQuestion].options) &&
+                  questions[currentQuestion].options.map((option, i) => {
+                    return (
+                      <Fragment key={i}>
+                        {questions[currentQuestion].question_type === "SELECT" ? (
+                          <button
+                            key={option.id}
+                            name="isSelect"
+                            onClick={() => selectAnswer(option)}
+                            className={styles.quiz_card_option}>
+                            <h2 className={styles.buttonTextSelector}>
+                              {option.title}
+                            </h2>
+                            {props.debug && (
+                              <div className={styles.debugScore}>
+                                <p className="m-0 p-0">Score: {option.score}</p>
+                                <p className="m-0 p-0">Pos: {option.position}</p>
+                              </div>
+                            )}
+                          </button>
+                        ) : questions[currentQuestion].question_type ===
+                          "SELECT_MULTIPLE" ? (
+                          <>
+                            <label
+                              className={checkBoxStyle.multiSelect_label}
+                              key={option.id}>
+                              <input
+                                value={option.score}
+                                name="isMultiselect"
+                                type="checkbox"
+                                onChange={() => verifyCurrentCheckbox()}
+                                className={checkBoxStyle.buton_input}
+                              />
+                              <h2
+                                className={checkBoxStyle.button_span}
+                                style={{ fontWeight: "normal" }}>
+                                {option.title}
+                              </h2>
+                            </label>
+                          </>
+                        ) : (
+                          <p>An error occurred. Please, report to your teacher</p>
                         )}
-                      </button>
-                    ) : questions[currentQuestion].question_type ===
-                      "SELECT_MULTIPLE" ? (
-                      <>
-                        <label
-                          className={checkBoxStyle.multiSelect_label}
-                          key={option.id}>
-                          <input
-                            value={option.score}
-                            name="isMultiselect"
-                            type="checkbox"
-                            onChange={() => verifyCurrentCheckbox()}
-                            className={checkBoxStyle.buton_input}
-                          />
-                          <h2
-                            className={checkBoxStyle.button_span}
-                            style={{ fontWeight: "normal" }}>
-                            {option.title}
-                          </h2>
-                        </label>
-                      </>
-                    ) : (
-                      <p>An error occurred. Please, report to your teacher</p>
-                    )}
-                  </Fragment>
-                );
-              })}
-          </div>
+                      </Fragment>
+                    );
+                  })}
+              </div>
+            </>
+          }
 
           {questions[currentQuestion].question_type === "SELECT_MULTIPLE" ? (
             <>
@@ -265,29 +287,25 @@ const QuizCard = ({ onAnswer, onFinish, ...props }) => {
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
-                margin: "10rem 0",
               }}>
               {props.toggleFinalScore && (
                 <>
-                  <span
-                    style={{
-                      fontSize: "var(--xxl)",
-                      textAlign: "center",
-                      margin: "20px 0",
-                    }}>
-                    {Math.floor((store.score / questions.length) * 100)}%
-                    accuracy
+                  <p style={{ fontSize: "var(--sm)" }}>Your Score</p>
+                  <CircleProgressBar
+                    percentage={Math.floor((store.score / questions.length) * 100)}
+                    circleWwidth={140}
+                    strokeWidth={5}
+                    radius={60}
+                  />
+                  <span style={{ fontSize: "var(--sm)", marginTop: '1.5rem' }}>
+                    Accuracy: {store.score} / {questions.length}
                   </span>
-                  <span style={{ fontSize: "var(--m)", margin: "20px 0" }}>
-                    Your Score: {store.score} / {questions.length}
-                    <br />
-                  </span>
+                  {props.toggleTimer && (
+                    <span style={{ fontSize: "var(--sm)", marginTop: '10px' }}>
+                      Finished in: {store.timer} Seconds
+                    </span>
+                  )}
                 </>
-              )}
-              {props.toggleTimer && (
-                <span style={{ fontSize: "var(--m)", margin: "20px 0" }}>
-                  Finished in: {store.timer} Seconds
-                </span>
               )}
               {(currentTresh || store.tresholds.length > 0) && (
                 <>
@@ -304,13 +322,13 @@ const QuizCard = ({ onAnswer, onFinish, ...props }) => {
                     }}
                   />
                   {currentTresh?.success_next ||
-                  store.tresholds[0].fail_next ? (
+                    store.tresholds[0].fail_next ? (
                     <a
                       id="continueBtn"
                       className={styles.continueBtn}
                       href={updateQueryStringWithCurrentURLParams(
                         currentTresh?.success_next ||
-                          store.tresholds[0].fail_next,
+                        store.tresholds[0].fail_next,
                         {
                           leadData:
                             session && session.formData
@@ -328,7 +346,7 @@ const QuizCard = ({ onAnswer, onFinish, ...props }) => {
           )}
         </>
       )}
-    </div>
+    </>
   );
 };
 
