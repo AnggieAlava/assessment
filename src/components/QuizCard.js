@@ -14,6 +14,8 @@ import {
 import IconBase from "src/common/components/icons/IconBase";
 import CircleProgressBar from "./CircleResultBar";
 import { timerIconPath } from "src/common/components/paths/timerIcon";
+import QuestionContent from "./QuestionContent";
+import PropTypes from 'prop-types'
 
 const QuizCard = ({ onAnswer, onFinish, ...props }) => {
   const [currentTresh, setCurrentTresh] = useState(null);
@@ -29,7 +31,6 @@ const QuizCard = ({ onAnswer, onFinish, ...props }) => {
     return store.templates[type][index];
   };
 
-  // console.log("CURRENT_QUESTIONS", questions)
   const verifyAnswer = (score) => {
     if (score > 0) {
       dispatch({
@@ -183,52 +184,14 @@ const QuizCard = ({ onAnswer, onFinish, ...props }) => {
               </div>
 
               <div className={styles.quiz_grid}>
-                {Array.isArray(questions[currentQuestion].options) &&
-                  questions[currentQuestion].options.map((option, i) => {
-                    return (
-                      <Fragment key={i}>
-                        {questions[currentQuestion].question_type === "SELECT" ? (
-                          <button
-                            key={option.id}
-                            name="isSelect"
-                            onClick={() => selectAnswer(option)}
-                            className={styles.quiz_card_option}>
-                            <h2 className={styles.buttonTextSelector}>
-                              {option.title}
-                            </h2>
-                            {props.debug && (
-                              <div className={styles.debugScore}>
-                                <p className="m-0 p-0">Score: {option.score}</p>
-                                <p className="m-0 p-0">Pos: {option.position}</p>
-                              </div>
-                            )}
-                          </button>
-                        ) : questions[currentQuestion].question_type ===
-                          "SELECT_MULTIPLE" ? (
-                          <>
-                            <label
-                              className={checkBoxStyle.multiSelect_label}
-                              key={option.id}>
-                              <input
-                                value={option.score}
-                                name="isMultiselect"
-                                type="checkbox"
-                                onChange={() => verifyCurrentCheckbox()}
-                                className={checkBoxStyle.buton_input}
-                              />
-                              <h2
-                                className={checkBoxStyle.button_span}
-                                style={{ fontWeight: "normal" }}>
-                                {option.title}
-                              </h2>
-                            </label>
-                          </>
-                        ) : (
-                          <p>An error occurred. Please, report to your teacher</p>
-                        )}
-                      </Fragment>
-                    );
-                  })}
+                {Array.isArray(questions[currentQuestion].options) && (
+                  <QuestionContent
+                    question={questions[currentQuestion]}
+                    selectAnswer={selectAnswer}
+                    verifyCurrentCheckbox={verifyCurrentCheckbox}
+                    debug={props.debug}
+                  />
+                )}
               </div>
             </>
           }
@@ -348,6 +311,22 @@ const QuizCard = ({ onAnswer, onFinish, ...props }) => {
       )}
     </>
   );
+};
+
+QuizCard.propTypes = {
+  onAnswer: PropTypes.func,
+  onFinish: PropTypes.func,
+  debug: PropTypes.bool,
+  toggleFinalScore: PropTypes.bool,
+  toggleTimer: PropTypes.bool,
+};
+
+QuizCard.defaultProps = {
+  onAnswer: () => {},
+  onFinish: () => {},
+  debug: false,
+  toggleFinalScore: true,
+  toggleTimer: true,
 };
 
 export default QuizCard;

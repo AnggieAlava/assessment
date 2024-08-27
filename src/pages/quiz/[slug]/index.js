@@ -410,7 +410,6 @@ const QuizSlug = () => {
 
           <div className={styles.quiz_main}>
             {!store.started ? (
-              <>
                 <div className={styles.quiz_wrapper}>
                   <Heading 
                     className={styles.quiz_title}
@@ -438,8 +437,6 @@ const QuizSlug = () => {
                     </button>
                   </div>
                 </div>
-
-              </>
             ) : (
               <>
                 <Heading 

@@ -7,7 +7,7 @@ import Spinner from "./Spinner";
 import styles from "@styles/Home.module.css";
 
 export const Answer = () => {
-  const [store, dispatch] = useContext(StoreContext);
+  const [store] = useContext(StoreContext);
 
   return (
     <div className={styles.Answer_Change}>
@@ -27,7 +27,7 @@ export const Answer = () => {
         }
       </div>
 
-      <Spinner/>
+      <Spinner />
 
       <style jsx>
         {`

@@ -1,10 +1,11 @@
 import React from "react";
 import styles from "@styles/Home.module.css";
+import PropTypes from 'prop-types';
 import { Space_Grotesk } from 'next/font/google';
 
 const spaceGrotesk = Space_Grotesk({ weight: '700', subsets: ['latin'] });
 
-function CircleProgressBar({ percentage, circleWwidth, strokeWidth, radius }) {
+function CircleProgressBar({ percentage, circleWidth, strokeWidth, radius }) {
 
     const dashArray = radius * Math.PI * 2;
     const dashOffset = dashArray - (dashArray * percentage) / 100;
@@ -18,20 +19,20 @@ function CircleProgressBar({ percentage, circleWwidth, strokeWidth, radius }) {
     return (
         <div>
             <svg
-                width={circleWwidth}
-                height={circleWwidth}
-                viewBox={`0 0 ${circleWwidth} ${circleWwidth}`}
+                width={circleWidth}
+                height={circleWidth}
+                viewBox={`0 0 ${circleWidth} ${circleWidth}`}
             >
                 <circle
-                    cx={circleWwidth / 2}
-                    cy={circleWwidth / 2}
+                    cx={circleWidth / 2}
+                    cy={circleWidth / 2}
                     strokeWidth={strokeWidth}
                     r={radius}
                     className={styles.circleBackground}
                 />
                 <circle
-                    cx={circleWwidth / 2}
-                    cy={circleWwidth / 2}
+                    cx={circleWidth / 2}
+                    cy={circleWidth / 2}
                     strokeWidth={strokeWidth}
                     r={radius}
                     className={styles.circleProgress}
@@ -48,5 +49,18 @@ function CircleProgressBar({ percentage, circleWwidth, strokeWidth, radius }) {
         </div>
     )
 }
+
+CircleProgressBar.propTypes = {
+    percentage: PropTypes.number.isRequired,
+    circleWidth: PropTypes.number,
+    strokeWidth: PropTypes.number,
+    radius: PropTypes.number
+};
+
+CircleProgressBar.defaultProps = {
+    circleWidth: 140,
+    strokeWidth: 5,
+    radius: 60
+};
 
 export default CircleProgressBar
