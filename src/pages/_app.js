@@ -1,4 +1,5 @@
 import "../../styles/globals.css";
+import "../../styles/defaultTheme.css"
 import StoreProvider from "../store/StoreProvider";
 import { Lato } from 'next/font/google';
 

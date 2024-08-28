@@ -149,6 +149,8 @@ const QuizCard = ({ onAnswer, onFinish, ...props }) => {
     }
   };
 
+  console.log(store.tresholds)
+
   return (
     <>
 
@@ -158,13 +160,15 @@ const QuizCard = ({ onAnswer, onFinish, ...props }) => {
             <Answer />
             :
             <>
-              <div className={styles.quiz_card_top_wrapper}>
+              <div
+                className={styles.quiz_card_top_wrapper}
+                style={!props.toggleTimer ? { justifyContent: 'start' } : { justifyContent: 'space-between' }}>
 
                 <div>
-                  <p className={styles.progress}>{currentQuestion}/{questions.length}</p>
+                  <p className='progress'>{currentQuestion}/{questions.length}</p>
                 </div>
 
-                <h1 className={styles.quiz_card_title}>
+                <h1 className={styles.quiz_card_title} style={!props.toggleTimer ? {alignSelf:'center', flexGrow:'1'} : {}}>
                   {questions[currentQuestion].title}
                   {props.debug && (
                     <div className={styles.debugScore}>
@@ -173,14 +177,16 @@ const QuizCard = ({ onAnswer, onFinish, ...props }) => {
                   )}
                 </h1>
 
-                <div>
-                  <p className={styles.timer}>
-                    <IconBase viewBox='0 0 24 15'>
-                      {timerIconPath}
-                    </IconBase>
-                    {store.timer} sec
-                  </p>
-                </div>
+                {props.toggleTimer &&
+                  <div>
+                    <p className='timer'>
+                      <IconBase viewBox='0 0 24 15'>
+                        {timerIconPath}
+                      </IconBase>
+                      {store.timer} sec
+                    </p>
+                  </div>
+                }
               </div>
 
               <div className={styles.quiz_grid}>
@@ -288,7 +294,7 @@ const QuizCard = ({ onAnswer, onFinish, ...props }) => {
                     store.tresholds[0].fail_next ? (
                     <a
                       id="continueBtn"
-                      className={styles.continueBtn}
+                      className='quiz_continue_button quiz_button'
                       href={updateQueryStringWithCurrentURLParams(
                         currentTresh?.success_next ||
                         store.tresholds[0].fail_next,
@@ -322,8 +328,8 @@ QuizCard.propTypes = {
 };
 
 QuizCard.defaultProps = {
-  onAnswer: () => {},
-  onFinish: () => {},
+  onAnswer: () => { },
+  onFinish: () => { },
   debug: false,
   toggleFinalScore: true,
   toggleTimer: true,

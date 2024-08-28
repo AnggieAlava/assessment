@@ -10,12 +10,12 @@ import LeadForm from "src/components/LeadForm.js";
 import Head from "next/head";
 import { isWindow, updateQueystring, rand, parseQuery } from "src/util";
 
-import IconBase from "src/common/components/icons/IconBase";
 import Heading from "src/common/components/Heading";
 import { codeIconPath } from "src/common/components/paths/codeIcon";
-import { thumbDownIconPath } from "src/common/components/paths/thumbdown";
+import useDefaultLayout from "src/hooks/useDefaultLayout";
 
 const QuizSlug = () => {
+  const defaultLayout = useDefaultLayout();
   const [store, dispatch] = useContext(StoreContext);
   const [quiz, setQuiz] = useState(null);
   const [loading, setLoading] = useState(null);
@@ -28,9 +28,9 @@ const QuizSlug = () => {
   const {
     academy,
     slug,
-    time,
-    score,
-    debug,
+    time, //check
+    score, //check
+    debug, //check
     token = null,
     ua_token,
     isAnon = false,
@@ -38,9 +38,9 @@ const QuizSlug = () => {
     medium,
     source,
     email = null,
-    layout,
+    layout, //check
     threshold_id,
-    threshold_tag,
+    threshold_tag, //check
   } = router.query; // Asegúrate de obtener 'time' del query string
 
   // If coming from a previous assessment, here we have the conversion info
@@ -93,6 +93,7 @@ const QuizSlug = () => {
       // Handle the error according to your application's needs
     }
   };
+
   const loadUserAssessment = async () => {
     if (isAnon && isAnon != "false") return false;
     try {
@@ -386,9 +387,7 @@ const QuizSlug = () => {
 
   return (
     <div className={styles.container}>
-      {layoutConfig && layoutConfig.additional_styles && (
-        <Styles base64CSS={layoutConfig.additional_styles} />
-      )}
+      <Styles base64CSS={layoutConfig && layoutConfig.additional_styles ? layoutConfig.additional_styles : defaultLayout} />
       <Head>
         <title>{quiz?.title}</title>
         <meta name="description" content={quiz?.title} />
@@ -401,66 +400,58 @@ const QuizSlug = () => {
           extraFields={layoutConfig?.variables?.fields}
         />
       ) : (
-        <Fragment>
-          {store.showFinalScore !== true && store.started === true ? (
-            <p className={styles.currentQuestion} style={{ zIndex: -1 }}>
-              {store.currentQuestion + 1}/{store.questions.length}
-            </p>
-          ) : null}
+        <div className={styles.quiz_main}>
+          {!store.started ? (
+            <div className='quiz_wrapper'>
+              <Heading
+                className={styles.quiz_title}
+                title={`Quizz: ${quiz?.title}`}
+                iconPath={codeIconPath}
+                iconWidth={32}
+                iconHeight={23}
+                iconViewBox={'0 0 24 15'}
+                iconStyle={{ marginRight: "1.2rem" }}
+              />
 
-          <div className={styles.quiz_main}>
-            {!store.started ? (
-                <div className={styles.quiz_wrapper}>
-                  <Heading 
-                    className={styles.quiz_title}
-                    title={`Quizz: ${quiz?.title}`}
-                    iconPath={codeIconPath}
-                    iconWidth={32}
-                    iconHeight={23}
-                    iconViewBox={'0 0 24 15'}
-                    iconStyle={{ marginRight: "1.2rem" }}
-                  />
+              <p className={styles.quiz_description}>
+                Welcome to an interactive quiz. Test your knowledge by answering simple selection questions and see your result at the end of the exercise.
+              </p>
 
-                  <p className={styles.quiz_description}>
-                    Welcome to an interactive quiz. Test your knowledge by answering simple selection questions and see your result at the end of the exercise.
-                  </p>
-
-                  <div className={styles.grid_start}>
-                    <button
-                      id="startBtn"
-                      className={styles.start}
-                      onClick={handleStartQuiz}>
-                      <h2 style={{ margin: "5px 0" }}>
-                        Start
-                        <span style={{ marginLeft: "1rem" }}> {"⟶"} </span>
-                      </h2>
-                    </button>
-                  </div>
-                </div>
-            ) : (
-              <>
-                <Heading 
-                    className={styles.quiz_title}
-                    title={`Quizz: ${quiz?.title}`}
-                    iconPath={codeIconPath}
-                    iconWidth={32}
-                    iconHeight={23}
-                    iconViewBox={'0 0 24 15'}
-                    iconStyle={{ marginRight: "1.2rem" }}
-                  />
-                <div className={styles.quiz_wrapper}>
-                  <QuizCard
-                    onAnswer={(option) => createUserAnswer(option)}
-                    onFinish={() => finishUserAssessment()}
-                    toggleFinalScore={toggleFinalScore}
-                    toggleTimer={toggleTimer}
-                    debug={debug == "true"}
-                  />
-                </div>
-              </>
-            )}
-          </div>
-        </Fragment>
+              <div className={styles.grid_start}>
+                <button
+                  id="startBtn"
+                  className='quiz_start_button quiz_button'
+                  onClick={handleStartQuiz}>
+                  <h2 style={{ margin: "5px 0" }}>
+                    Start
+                    <span style={{ marginLeft: "1rem" }}> {"⟶"} </span>
+                  </h2>
+                </button>
+              </div>
+            </div>
+          ) : (
+            <>
+              <Heading
+                className={styles.quiz_title}
+                title={`Quizz: ${quiz?.title}`}
+                iconPath={codeIconPath}
+                iconWidth={32}
+                iconHeight={23}
+                iconViewBox={'0 0 24 15'}
+                iconStyle={{ marginRight: "1.2rem" }}
+              />
+              <div className='quiz_wrapper'>
+                <QuizCard
+                  onAnswer={(option) => createUserAnswer(option)}
+                  onFinish={() => finishUserAssessment()}
+                  toggleFinalScore={toggleFinalScore}
+                  toggleTimer={toggleTimer}
+                  debug={debug == "true"}
+                />
+              </div>
+            </>
+          )}
+        </div>
       )}
     </div>
   );
