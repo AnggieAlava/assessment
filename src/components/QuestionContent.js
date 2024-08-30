@@ -4,28 +4,27 @@ import SelectQuestion from "./SelectQuestion";
 import SelectMultipleQuestion from "./SelectMultipleQuestion";
 
 const QuestionContent = ({ question, selectAnswer, verifyCurrentCheckbox, debug }) => {
-    if (question.question_type === "SELECT") {
-        return question.options.map((option, i) => (
+    const questionComponents = {
+        SELECT: (option, i) => (
             <SelectQuestion
                 key={option.id}
                 option={option}
                 selectAnswer={selectAnswer}
                 debug={debug}
             />
-        ));
-    }
-
-    if (question.question_type === "SELECT_MULTIPLE") {
-        return question.options.map((option, i) => (
+        ),
+        SELECT_MULTIPLE: (option, i) => (
             <SelectMultipleQuestion
                 key={option.id}
                 option={option}
                 verifyCurrentCheckbox={verifyCurrentCheckbox}
             />
-        ));
-    }
+        ),
+    };
 
-    return <p>An error occurred. Please, report to your teacher</p>;
+    return questionComponents[question.question_type]
+        ? question.options.map(questionComponents[question.question_type])
+        : <p>An error occurred. Please, report to your teacher</p>;
 };
 
 QuestionContent.propTypes = {

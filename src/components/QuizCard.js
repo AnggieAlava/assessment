@@ -149,7 +149,6 @@ const QuizCard = ({ onAnswer, onFinish, ...props }) => {
     }
   };
 
-  console.log(store.tresholds)
 
   return (
     <>

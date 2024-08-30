@@ -27,18 +27,18 @@ const QuizSlug = () => {
   const router = useRouter();
   const {
     academy,
-    slug,
-    time, //check
-    score, //check
-    debug, //check
-    token = null,
-    ua_token,
-    isAnon = false,
+    slug, //check
+    time, //false-true
+    score, //false-true
+    debug, //false-true
+    token = null, //token:string
+    ua_token, //token:string
+    isAnon = false, //true-false
     campaign,
     medium,
     source,
     email = null,
-    layout, //check
+    layout, //layout:string
     threshold_id,
     threshold_tag, //check
   } = router.query; // Asegúrate de obtener 'time' del query string
@@ -88,6 +88,7 @@ const QuizSlug = () => {
       if (formData) setSession({ formData });
 
       return data;
+
     } catch (error) {
       console.error("Failed to create user assessment:", error);
       // Handle the error according to your application's needs
@@ -97,7 +98,6 @@ const QuizSlug = () => {
   const loadUserAssessment = async () => {
     if (isAnon && isAnon != "false") return false;
     try {
-      let headers = {};
       setLoading({ message: "Loading previous assessment session" });
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_HOST}/assessment/user/assessment/${ua_token}`
@@ -265,6 +265,7 @@ const QuizSlug = () => {
     };
     if (layout) getLayout();
   }, [layout]);
+
 
   useEffect(() => {
     if (quiz) {
