@@ -7,9 +7,9 @@ const SelectQuestion = ({ option, selectAnswer, debug }) => (
         key={option.id}
         name="isSelect"
         onClick={() => selectAnswer(option)}
-        className={styles.quiz_card_option}
+        className='quiz_card_option'
     >
-        <h2 className={styles.buttonTextSelector}>
+        <h2 className='buttonTextSelector'>
             {option.title}
         </h2>
         {debug && (

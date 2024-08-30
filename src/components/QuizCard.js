@@ -151,7 +151,7 @@ const QuizCard = ({ onAnswer, onFinish, ...props }) => {
 
 
   return (
-    <>
+    <div className='quiz-card'>
 
       {store.showFinalScore === false && questions.length > 0 ? (
         <>
@@ -314,7 +314,7 @@ const QuizCard = ({ onAnswer, onFinish, ...props }) => {
           )}
         </>
       )}
-    </>
+    </div>
   );
 };
 

@@ -12,10 +12,8 @@ import { isWindow, updateQueystring, rand, parseQuery } from "src/util";
 
 import Heading from "src/common/components/Heading";
 import { codeIconPath } from "src/common/components/paths/codeIcon";
-import useDefaultLayout from "src/hooks/useDefaultLayout";
 
 const QuizSlug = () => {
-  const defaultLayout = useDefaultLayout();
   const [store, dispatch] = useContext(StoreContext);
   const [quiz, setQuiz] = useState(null);
   const [loading, setLoading] = useState(null);
@@ -388,7 +386,9 @@ const QuizSlug = () => {
 
   return (
     <div className={styles.container}>
-      <Styles base64CSS={layoutConfig && layoutConfig.additional_styles ? layoutConfig.additional_styles : defaultLayout} />
+      {layoutConfig && layoutConfig.additional_styles && (
+        <Styles base64CSS={layoutConfig.additional_styles} />
+      )}
       <Head>
         <title>{quiz?.title}</title>
         <meta name="description" content={quiz?.title} />
