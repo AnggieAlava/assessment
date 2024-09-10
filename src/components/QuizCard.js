@@ -167,7 +167,7 @@ const QuizCard = ({ onAnswer, onFinish, ...props }) => {
                   <p className='progress'>{currentQuestion}/{questions.length}</p>
                 </div>
 
-                <h1 className={styles.quiz_card_title} style={!props.toggleTimer ? {alignSelf:'center', flexGrow:'1'} : {}}>
+                <h1 className={styles.quiz_card_title} style={!props.toggleTimer ? { alignSelf: 'center', flexGrow: '1' } : {}}>
                   {questions[currentQuestion].title}
                   {props.debug && (
                     <div className={styles.debugScore}>
@@ -275,63 +275,68 @@ const QuizCard = ({ onAnswer, onFinish, ...props }) => {
                   )}
                 </>
               )}
-              {(currentTresh || store.tresholds.length > 0) && (
-                <>
-                  <div
-                    style={{
-                      fontSize: "var(--m)",
-                      margin: "20px 0",
-                      textAlign: "center",
-                    }}
-                    dangerouslySetInnerHTML={{
-                      __html:
-                        currentTresh?.success_message ||
-                        store.tresholds[0].fail_message,
-                    }}
-                  />
-                  {currentTresh?.success_next ||
-                    store.tresholds[0].fail_next ? (
-                    <a
-                      id="continueBtn"
-                      className='quiz_continue_button quiz_button'
-                      href={updateQueryStringWithCurrentURLParams(
-                        currentTresh?.success_next ||
-                        store.tresholds[0].fail_next,
-                        {
-                          leadData:
-                            session && session.formData
-                              ? btoa(JSON.stringify(session.formData))
-                              : undefined,
-                        }
-                      )}
-                      target="_parent">
-                      Continue to Next Step
-                    </a>
-                  ) : null}
-                </>
-              )}
-            </div>
+              {!props.toggleFinalScore && !props.toggleTimer && !currentTresh &&
+                <div style={{textAlign:'center'}}>
+                  <h1>You have reached the end of this assessment. Thank you for your time!</h1>
+                </div>
+              }
+                  {(currentTresh || store.tresholds.length > 0) && (
+                    <>
+                      <div
+                        style={{
+                          fontSize: "var(--m)",
+                          margin: "20px 0",
+                          textAlign: "center",
+                        }}
+                        dangerouslySetInnerHTML={{
+                          __html:
+                            currentTresh?.success_message ||
+                            store.tresholds[0].fail_message,
+                        }}
+                      />
+                      {currentTresh?.success_next ||
+                        store.tresholds[0].fail_next ? (
+                        <a
+                          id="continueBtn"
+                          className='quiz_continue_button quiz_button'
+                          href={updateQueryStringWithCurrentURLParams(
+                            currentTresh?.success_next ||
+                            store.tresholds[0].fail_next,
+                            {
+                              leadData:
+                                session && session.formData
+                                  ? btoa(JSON.stringify(session.formData))
+                                  : undefined,
+                            }
+                          )}
+                          target="_parent">
+                          Continue to Next Step
+                        </a>
+                      ) : null}
+                    </>
+                  )}
+                </div>
           )}
-        </>
-      )}
-    </div>
-  );
+            </>
+          )}
+        </div>
+      );
 };
 
-QuizCard.propTypes = {
-  onAnswer: PropTypes.func,
-  onFinish: PropTypes.func,
-  debug: PropTypes.bool,
-  toggleFinalScore: PropTypes.bool,
-  toggleTimer: PropTypes.bool,
+      QuizCard.propTypes = {
+        onAnswer: PropTypes.func,
+      onFinish: PropTypes.func,
+      debug: PropTypes.bool,
+      toggleFinalScore: PropTypes.bool,
+      toggleTimer: PropTypes.bool,
 };
 
-QuizCard.defaultProps = {
-  onAnswer: () => { },
+      QuizCard.defaultProps = {
+        onAnswer: () => { },
   onFinish: () => { },
-  debug: false,
-  toggleFinalScore: true,
-  toggleTimer: true,
+      debug: false,
+      toggleFinalScore: true,
+      toggleTimer: true,
 };
 
-export default QuizCard;
+      export default QuizCard;
