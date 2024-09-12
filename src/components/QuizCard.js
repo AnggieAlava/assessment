@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { StoreContext } from "@store/StoreProvider";
 import styles from "@styles/Home.module.css";
 import checkBoxStyle from "@styles/multiselect.module.css";
@@ -17,7 +17,7 @@ import { timerIconPath } from "src/common/components/paths/timerIcon";
 import QuestionContent from "./QuestionContent";
 import PropTypes from 'prop-types'
 
-const QuizCard = ({ onAnswer, onFinish, ...props }) => {
+const QuizCard = ({ onAnswer, onFinish, toggleFinalScore, toggleTimer, debug }) => {
   const [currentTresh, setCurrentTresh] = useState(null);
   const [store, dispatch] = useContext(StoreContext);
   const session = getSession();
@@ -149,10 +149,8 @@ const QuizCard = ({ onAnswer, onFinish, ...props }) => {
     }
   };
 
-
   return (
     <div className='quiz-card'>
-
       {store.showFinalScore === false && questions.length > 0 ? (
         <>
           {store.getAnswer === true && store.isInstantFeedback ?
@@ -161,22 +159,22 @@ const QuizCard = ({ onAnswer, onFinish, ...props }) => {
             <>
               <div
                 className={styles.quiz_card_top_wrapper}
-                style={!props.toggleTimer ? { justifyContent: 'start' } : { justifyContent: 'space-between' }}>
+                style={!toggleTimer ? { justifyContent: 'start' } : { justifyContent: 'space-between' }}>
 
                 <div>
                   <p className='progress'>{currentQuestion}/{questions.length}</p>
                 </div>
 
-                <h1 className={styles.quiz_card_title} style={!props.toggleTimer ? { alignSelf: 'center', flexGrow: '1' } : {}}>
+                <h1 className={styles.quiz_card_title} style={!toggleTimer ? { alignSelf: 'center', flexGrow: '1' } : {}}>
                   {questions[currentQuestion].title}
-                  {props.debug && (
+                  {debug && (
                     <div className={styles.debugScore}>
                       Pos: {questions[currentQuestion].position}
                     </div>
                   )}
                 </h1>
 
-                {props.toggleTimer &&
+                {toggleTimer &&
                   <div>
                     <p className='timer'>
                       <IconBase viewBox='0 0 24 15'>
@@ -194,7 +192,7 @@ const QuizCard = ({ onAnswer, onFinish, ...props }) => {
                     question={questions[currentQuestion]}
                     selectAnswer={selectAnswer}
                     verifyCurrentCheckbox={verifyCurrentCheckbox}
-                    debug={props.debug}
+                    debug={debug}
                   />
                 )}
               </div>
@@ -256,7 +254,7 @@ const QuizCard = ({ onAnswer, onFinish, ...props }) => {
                 flexDirection: "column",
                 alignItems: "center",
               }}>
-              {props.toggleFinalScore && (
+              {toggleFinalScore && (
                 <>
                   <p style={{ fontSize: "var(--sm)" }}>Your Score</p>
                   <CircleProgressBar
@@ -268,14 +266,14 @@ const QuizCard = ({ onAnswer, onFinish, ...props }) => {
                   <span style={{ fontSize: "var(--sm)", marginTop: '1.5rem' }}>
                     Accuracy: {store.score} / {questions.length}
                   </span>
-                  {props.toggleTimer && (
+                  {toggleTimer && (
                     <span style={{ fontSize: "var(--sm)", marginTop: '10px' }}>
                       Finished in: {store.timer} Seconds
                     </span>
                   )}
                 </>
               )}
-              {!props.toggleFinalScore && !props.toggleTimer && !currentTresh &&
+              {!toggleFinalScore && !toggleTimer && !currentTresh &&
                 <div style={{textAlign:'center'}}>
                   <h1>You have reached the end of this assessment. Thank you for your time!</h1>
                 </div>

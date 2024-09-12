@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from "react";
+import { useState } from "react";
 import styles from "@styles/leadform.module.css";
 import { capitalize } from "src/util/index"
 import PropTypes from 'prop-types';

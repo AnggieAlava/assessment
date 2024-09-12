@@ -75,21 +75,17 @@ const QuizSlug = () => {
       const data = await response.json();
       setUserAssessment(data);
 
-      // keep user assessment session info on the URL to persist on window refresh
       updateQueystring({
         ua_token: data.token,
-        //remove lead information from queystring because it was already included in the user assessment session
         leadData: null,
       });
 
-      //include in the session the formData just in case it will be passed to the next assessment (chained assessments)
       if (formData) setSession({ formData });
 
       return data;
 
     } catch (error) {
       console.error("Failed to create user assessment:", error);
-      // Handle the error according to your application's needs
     }
   };
 
@@ -107,13 +103,31 @@ const QuizSlug = () => {
 
       const data = await response.json();
       setUserAssessment(data);
+
       if (data?.academy?.id) getThreshholds({ academy: data.academy.id, tag: threshold_tag || undefined });
-      setLoading(false);
+
+      if (data?.status === "DRAFT" && data?.summary?.last_answer) {
+        const startTime = new Date(data.started_at).getTime();
+
+        store.timerRef = setInterval(() => {
+          const newCurrentTime = Date.now();  // Obtener el tiempo actual en cada intervalo
+          const totalElapsedInSeconds = Math.floor((newCurrentTime - startTime) / 1000);  // Calcula el tiempo total desde `started_at`
+
+          dispatch({
+            type: types.startTimer,
+            payload: totalElapsedInSeconds,  // Pasar el tiempo transcurrido total al dispatch
+          });
+        }, 1000);  // Actualiza cada segundo
+      }
+
       return data;
     } catch (error) {
       console.error("Failed to load user assessment:", error);
       setLoading({ message: "Session has expired or was not found." });
       // Handle the error according to your application's needs
+    }
+    finally {
+      setLoading(false);
     }
   };
 
@@ -179,7 +193,6 @@ const QuizSlug = () => {
   };
 
   const getThreshholds = async (queryObject) => {
-    console.log("fetching thresholds")
     const qs = parseQuery(queryObject);
     const resThresh = await fetch(
       `${process.env.NEXT_PUBLIC_API_HOST}/assessment/${slug}/threshold${qs}`
@@ -214,9 +227,7 @@ const QuizSlug = () => {
   };
 
   const getThresholdsById = async (threshold_id) => {
-    const resThresh = await fetch(
-      `${process.env.NEXT_PUBLIC_API_HOST}/assessment/${slug}/threshold/${threshold_id}`
-    );
+    const resThresh = await fetch(`${process.env.NEXT_PUBLIC_API_HOST}/assessment/${slug}/threshold/${threshold_id}`);
 
     const payload = await resThresh.json();
     if (resThresh.status < 400) {
@@ -261,9 +272,9 @@ const QuizSlug = () => {
       const data = await res.json();
       setLayoutConfig(data);
     };
+
     if (layout) getLayout();
   }, [layout]);
-
 
   useEffect(() => {
     if (quiz) {
@@ -278,15 +289,20 @@ const QuizSlug = () => {
             "Error loading information from previous assessment",
             e
           );
-          // setLoading({ messa})
         }
       }
     }
   }, [quiz]);
 
   useEffect(() => {
+    if (userAssessment && userAssessment.finished_at && userAssessment.status === "ANSWERED" && !leadData) {
+      updateQueystring({
+        ua_token: null,
+      });
+      setUserAssessment(null)
+    }
+
     if (userAssessment) {
-      // set current question position or index
       let index =
         store.questions.findIndex(
           (q) => q.id == userAssessment.summary?.last_answer?.question?.id
@@ -304,7 +320,7 @@ const QuizSlug = () => {
         )
           index = store.questions[index].position + 1; // Esto ajusta el índice a la siguiente pregunta basada en la posición.
 
-        if (index > 0)
+        if (index > 0 && index < store.questions.length)
           // Solo se despacha la acción si el índice es mayor que 0, evitando un índice negativo o incorrecto.
           dispatch({
             type: types.setCurrentQuestion,
@@ -361,7 +377,8 @@ const QuizSlug = () => {
         type: types.timerRef,
         payload: intervalRef.current,
       });
-    } else {
+    }
+    else {
       const currentTime = Date.now() - store.timer;
       store.timerRef = setInterval(() => {
         dispatch({
@@ -373,7 +390,7 @@ const QuizSlug = () => {
     }
   };
 
-  if (loading || !quiz)
+  if (loading || !quiz) {
     return (
       <div className={styles.container}>
         <div className={styles.quiz_main}>
@@ -383,6 +400,7 @@ const QuizSlug = () => {
         </div>
       </div>
     );
+  }
 
   return (
     <div className={styles.container}>
@@ -402,7 +420,7 @@ const QuizSlug = () => {
         />
       ) : (
         <div className={styles.quiz_main}>
-          {!store.started ? (
+          {!store.started && !userAssessment?.summary?.last_answer ? (
             <div className='quiz_wrapper'>
               <Heading
                 className={styles.quiz_title}
