@@ -10,6 +10,9 @@ import LeadForm from "src/components/LeadForm.js";
 import Head from "next/head";
 import { isWindow, updateQueystring, rand, parseQuery } from "src/util";
 
+import Heading from "src/common/components/Heading";
+import { codeIconPath } from "src/common/components/paths/codeIcon";
+
 const QuizSlug = () => {
   const [store, dispatch] = useContext(StoreContext);
   const [quiz, setQuiz] = useState(null);
@@ -22,20 +25,20 @@ const QuizSlug = () => {
   const router = useRouter();
   const {
     academy,
-    slug,
-    time,
-    score,
-    debug,
-    token = null,
-    ua_token,
-    isAnon = false,
+    slug, //check
+    time, //false-true
+    score, //false-true
+    debug, //false-true
+    token = null, //token:string
+    ua_token, //token:string
+    isAnon = false, //true-false
     campaign,
     medium,
     source,
     email = null,
-    layout,
+    layout, //layout:string
     threshold_id,
-    threshold_tag,
+    threshold_tag, //check
   } = router.query; // Asegúrate de obtener 'time' del query string
 
   // If coming from a previous assessment, here we have the conversion info
@@ -72,26 +75,23 @@ const QuizSlug = () => {
       const data = await response.json();
       setUserAssessment(data);
 
-      // keep user assessment session info on the URL to persist on window refresh
       updateQueystring({
         ua_token: data.token,
-        //remove lead information from queystring because it was already included in the user assessment session
         leadData: null,
       });
 
-      //include in the session the formData just in case it will be passed to the next assessment (chained assessments)
       if (formData) setSession({ formData });
 
       return data;
+
     } catch (error) {
       console.error("Failed to create user assessment:", error);
-      // Handle the error according to your application's needs
     }
   };
+
   const loadUserAssessment = async () => {
     if (isAnon && isAnon != "false") return false;
     try {
-      let headers = {};
       setLoading({ message: "Loading previous assessment session" });
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_HOST}/assessment/user/assessment/${ua_token}`
@@ -103,13 +103,31 @@ const QuizSlug = () => {
 
       const data = await response.json();
       setUserAssessment(data);
+
       if (data?.academy?.id) getThreshholds({ academy: data.academy.id, tag: threshold_tag || undefined });
-      setLoading(false);
+
+      if (data?.status === "DRAFT" && data?.summary?.last_answer) {
+        const startTime = new Date(data.started_at).getTime();
+
+        store.timerRef = setInterval(() => {
+          const newCurrentTime = Date.now();  // Obtener el tiempo actual en cada intervalo
+          const totalElapsedInSeconds = Math.floor((newCurrentTime - startTime) / 1000);  // Calcula el tiempo total desde `started_at`
+
+          dispatch({
+            type: types.startTimer,
+            payload: totalElapsedInSeconds,  // Pasar el tiempo transcurrido total al dispatch
+          });
+        }, 1000);  // Actualiza cada segundo
+      }
+
       return data;
     } catch (error) {
       console.error("Failed to load user assessment:", error);
       setLoading({ message: "Session has expired or was not found." });
       // Handle the error according to your application's needs
+    }
+    finally {
+      setLoading(false);
     }
   };
 
@@ -175,7 +193,6 @@ const QuizSlug = () => {
   };
 
   const getThreshholds = async (queryObject) => {
-    console.log("fetching thresholds")
     const qs = parseQuery(queryObject);
     const resThresh = await fetch(
       `${process.env.NEXT_PUBLIC_API_HOST}/assessment/${slug}/threshold${qs}`
@@ -210,9 +227,7 @@ const QuizSlug = () => {
   };
 
   const getThresholdsById = async (threshold_id) => {
-    const resThresh = await fetch(
-      `${process.env.NEXT_PUBLIC_API_HOST}/assessment/${slug}/threshold/${threshold_id}`
-    );
+    const resThresh = await fetch(`${process.env.NEXT_PUBLIC_API_HOST}/assessment/${slug}/threshold/${threshold_id}`);
 
     const payload = await resThresh.json();
     if (resThresh.status < 400) {
@@ -257,6 +272,7 @@ const QuizSlug = () => {
       const data = await res.json();
       setLayoutConfig(data);
     };
+
     if (layout) getLayout();
   }, [layout]);
 
@@ -273,20 +289,25 @@ const QuizSlug = () => {
             "Error loading information from previous assessment",
             e
           );
-          // setLoading({ messa})
         }
       }
     }
   }, [quiz]);
 
   useEffect(() => {
+    if (userAssessment && userAssessment.finished_at && userAssessment.status === "ANSWERED" && !leadData) {
+      updateQueystring({
+        ua_token: null,
+      });
+      setUserAssessment(null)
+    }
+
     if (userAssessment) {
-      // set current question position or index
       let index =
         store.questions.findIndex(
           (q) => q.id == userAssessment.summary?.last_answer?.question?.id
         );
-      if(index < 0) index = 0
+      if (index < 0) index = 0
 
       if (index >= store.questions.length)
         setLoading({
@@ -299,7 +320,7 @@ const QuizSlug = () => {
         )
           index = store.questions[index].position + 1; // Esto ajusta el índice a la siguiente pregunta basada en la posición.
 
-        if (index > 0)
+        if (index > 0 && index < store.questions.length)
           // Solo se despacha la acción si el índice es mayor que 0, evitando un índice negativo o incorrecto.
           dispatch({
             type: types.setCurrentQuestion,
@@ -356,7 +377,8 @@ const QuizSlug = () => {
         type: types.timerRef,
         payload: intervalRef.current,
       });
-    } else {
+    }
+    else {
       const currentTime = Date.now() - store.timer;
       store.timerRef = setInterval(() => {
         dispatch({
@@ -368,7 +390,7 @@ const QuizSlug = () => {
     }
   };
 
-  if (loading || !quiz)
+  if (loading || !quiz) {
     return (
       <div className={styles.container}>
         <div className={styles.quiz_main}>
@@ -378,6 +400,7 @@ const QuizSlug = () => {
         </div>
       </div>
     );
+  }
 
   return (
     <div className={styles.container}>
@@ -396,44 +419,58 @@ const QuizSlug = () => {
           extraFields={layoutConfig?.variables?.fields}
         />
       ) : (
-        <Fragment>
-          {store.showFinalScore !== true && store.started === true ? (
-            <p className={styles.currentQuestion} style={{ zIndex: -1 }}>
-              {store.currentQuestion + 1}/{store.questions.length}
-            </p>
-          ) : null}
-
-          {toggleTimer && (
-            <p className={styles.quiz_timer} style={{ zIndex: 99 }}>
-              {toggleTimer && `${store.timer} sec`}
-            </p>
-          )}
-
-          <div className={styles.quiz_main}>
-            {!store.started ? (
-              <>
-                <h1 className={styles.quiz_title}>{quiz?.title}</h1>
-
-                <div className={styles.grid_start}>
-                  <button
-                    id="startBtn"
-                    className={styles.start}
-                    onClick={handleStartQuiz}>
-                    <h2 style={{ margin: "5px 0" }}>Start</h2>
-                  </button>
-                </div>
-              </>
-            ) : (
-              <QuizCard
-                onAnswer={(option) => createUserAnswer(option)}
-                onFinish={() => finishUserAssessment()}
-                toggleFinalScore={toggleFinalScore}
-                toggleTimer={toggleTimer}
-                debug={debug == "true"}
+        <div className={styles.quiz_main}>
+          {!store.started && !userAssessment?.summary?.last_answer ? (
+            <div className='quiz_wrapper'>
+              <Heading
+                className={styles.quiz_title}
+                title={`Quizz: ${quiz?.title}`}
+                iconPath={codeIconPath}
+                iconWidth={32}
+                iconHeight={23}
+                iconViewBox={'0 0 24 15'}
+                iconStyle={{ marginRight: "1.2rem" }}
               />
-            )}
-          </div>
-        </Fragment>
+
+              <p className={styles.quiz_description}>
+                Welcome to an interactive quiz. Test your knowledge by answering simple selection questions and see your result at the end of the exercise.
+              </p>
+
+              <div className={styles.grid_start}>
+                <button
+                  id="startBtn"
+                  className='quiz_start_button quiz_button'
+                  onClick={handleStartQuiz}>
+                  <h2 style={{ margin: "5px 0" }}>
+                    Start
+                    <span style={{ marginLeft: "1rem" }}> {"⟶"} </span>
+                  </h2>
+                </button>
+              </div>
+            </div>
+          ) : (
+            <>
+              <Heading
+                className={styles.quiz_title}
+                title={`Quizz: ${quiz?.title}`}
+                iconPath={codeIconPath}
+                iconWidth={32}
+                iconHeight={23}
+                iconViewBox={'0 0 24 15'}
+                iconStyle={{ marginRight: "1.2rem" }}
+              />
+              <div className='quiz_wrapper'>
+                <QuizCard
+                  onAnswer={(option) => createUserAnswer(option)}
+                  onFinish={() => finishUserAssessment()}
+                  toggleFinalScore={toggleFinalScore}
+                  toggleTimer={toggleTimer}
+                  debug={debug == "true"}
+                />
+              </div>
+            </>
+          )}
+        </div>
       )}
     </div>
   );

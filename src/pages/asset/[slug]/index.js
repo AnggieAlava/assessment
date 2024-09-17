@@ -1,5 +1,4 @@
 import React from 'react';
-import { useRouter } from 'next/router';
 
 export async function getServerSideProps(context) {
   const { slug } = context.params;

@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { StoreContext } from "@store/StoreProvider";
 import styles from "@styles/Home.module.css";
 import checkBoxStyle from "@styles/multiselect.module.css";
@@ -11,8 +11,13 @@ import {
   getQueryString,
   updateQueryStringWithCurrentURLParams,
 } from "src/util";
+import IconBase from "src/common/components/icons/IconBase";
+import CircleProgressBar from "./CircleResultBar";
+import { timerIconPath } from "src/common/components/paths/timerIcon";
+import QuestionContent from "./QuestionContent";
+import PropTypes from 'prop-types'
 
-const QuizCard = ({ onAnswer, onFinish, ...props }) => {
+const QuizCard = ({ onAnswer, onFinish, toggleFinalScore, toggleTimer, debug }) => {
   const [currentTresh, setCurrentTresh] = useState(null);
   const [store, dispatch] = useContext(StoreContext);
   const session = getSession();
@@ -26,7 +31,6 @@ const QuizCard = ({ onAnswer, onFinish, ...props }) => {
     return store.templates[type][index];
   };
 
-  // console.log("CURRENT_QUESTIONS", questions)
   const verifyAnswer = (score) => {
     if (score > 0) {
       dispatch({
@@ -145,71 +149,55 @@ const QuizCard = ({ onAnswer, onFinish, ...props }) => {
     }
   };
 
-  console.log("currentTresh", currentTresh, store.tresholds);
-
   return (
-    <div className={`${styles.container} quiz-card`}>
-      {store.getAnswer === true && store.isInstantFeedback ? <Answer /> : null}
-
+    <div className='quiz-card'>
       {store.showFinalScore === false && questions.length > 0 ? (
         <>
-          <h1 className={styles.quiz_title_card}>
-            {questions[currentQuestion].title}
-            {props.debug && (
-              <div className={styles.debugScore}>
-                Pos: {questions[currentQuestion].position}
-              </div>
-            )}
-          </h1>
+          {store.getAnswer === true && store.isInstantFeedback ?
+            <Answer />
+            :
+            <>
+              <div
+                className={styles.quiz_card_top_wrapper}
+                style={!toggleTimer ? { justifyContent: 'start' } : { justifyContent: 'space-between' }}>
 
-          <div className={styles.quiz_grid}>
-            {Array.isArray(questions[currentQuestion].options) &&
-              questions[currentQuestion].options.map((option, i) => {
-                return (
-                  <Fragment key={i}>
-                    {questions[currentQuestion].question_type === "SELECT" ? (
-                      <button
-                        key={option.id}
-                        name="isSelect"
-                        onClick={() => selectAnswer(option)}
-                        className={styles.quiz_card_option}>
-                        <h2 className={styles.buttonTextSelector}>
-                          {option.title}
-                        </h2>
-                        {props.debug && (
-                          <div className={styles.debugScore}>
-                            <p className="m-0 p-0">Score: {option.score}</p>
-                            <p className="m-0 p-0">Pos: {option.position}</p>
-                          </div>
-                        )}
-                      </button>
-                    ) : questions[currentQuestion].question_type ===
-                      "SELECT_MULTIPLE" ? (
-                      <>
-                        <label
-                          className={checkBoxStyle.multiSelect_label}
-                          key={option.id}>
-                          <input
-                            value={option.score}
-                            name="isMultiselect"
-                            type="checkbox"
-                            onChange={() => verifyCurrentCheckbox()}
-                            className={checkBoxStyle.buton_input}
-                          />
-                          <h2
-                            className={checkBoxStyle.button_span}
-                            style={{ fontWeight: "normal" }}>
-                            {option.title}
-                          </h2>
-                        </label>
-                      </>
-                    ) : (
-                      <p>An error occurred. Please, report to your teacher</p>
-                    )}
-                  </Fragment>
-                );
-              })}
-          </div>
+                <div>
+                  <p className='progress'>{currentQuestion}/{questions.length}</p>
+                </div>
+
+                <h1 className={styles.quiz_card_title} style={!toggleTimer ? { alignSelf: 'center', flexGrow: '1' } : {}}>
+                  {questions[currentQuestion].title}
+                  {debug && (
+                    <div className={styles.debugScore}>
+                      Pos: {questions[currentQuestion].position}
+                    </div>
+                  )}
+                </h1>
+
+                {toggleTimer &&
+                  <div>
+                    <p className='timer'>
+                      <IconBase viewBox='0 0 24 15'>
+                        {timerIconPath}
+                      </IconBase>
+                      {store.timer} sec
+                    </p>
+                  </div>
+                }
+              </div>
+
+              <div className={styles.quiz_grid}>
+                {Array.isArray(questions[currentQuestion].options) && (
+                  <QuestionContent
+                    question={questions[currentQuestion]}
+                    selectAnswer={selectAnswer}
+                    verifyCurrentCheckbox={verifyCurrentCheckbox}
+                    debug={debug}
+                  />
+                )}
+              </div>
+            </>
+          }
 
           {questions[currentQuestion].question_type === "SELECT_MULTIPLE" ? (
             <>
@@ -265,71 +253,88 @@ const QuizCard = ({ onAnswer, onFinish, ...props }) => {
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
-                margin: "10rem 0",
               }}>
-              {props.toggleFinalScore && (
+              {toggleFinalScore && (
                 <>
-                  <span
-                    style={{
-                      fontSize: "var(--xxl)",
-                      textAlign: "center",
-                      margin: "20px 0",
-                    }}>
-                    {Math.floor((store.score / questions.length) * 100)}%
-                    accuracy
-                  </span>
-                  <span style={{ fontSize: "var(--m)", margin: "20px 0" }}>
-                    Your Score: {store.score} / {questions.length}
-                    <br />
-                  </span>
-                </>
-              )}
-              {props.toggleTimer && (
-                <span style={{ fontSize: "var(--m)", margin: "20px 0" }}>
-                  Finished in: {store.timer} Seconds
-                </span>
-              )}
-              {(currentTresh || store.tresholds.length > 0) && (
-                <>
-                  <div
-                    style={{
-                      fontSize: "var(--m)",
-                      margin: "20px 0",
-                      textAlign: "center",
-                    }}
-                    dangerouslySetInnerHTML={{
-                      __html:
-                        currentTresh?.success_message ||
-                        store.tresholds[0].fail_message,
-                    }}
+                  <p style={{ fontSize: "var(--sm)" }}>Your Score</p>
+                  <CircleProgressBar
+                    percentage={Math.floor((store.score / questions.length) * 100)}
+                    circleWwidth={140}
+                    strokeWidth={5}
+                    radius={60}
                   />
-                  {currentTresh?.success_next ||
-                  store.tresholds[0].fail_next ? (
-                    <a
-                      id="continueBtn"
-                      className={styles.continueBtn}
-                      href={updateQueryStringWithCurrentURLParams(
-                        currentTresh?.success_next ||
-                          store.tresholds[0].fail_next,
-                        {
-                          leadData:
-                            session && session.formData
-                              ? btoa(JSON.stringify(session.formData))
-                              : undefined,
-                        }
-                      )}
-                      target="_parent">
-                      Continue to Next Step
-                    </a>
-                  ) : null}
+                  <span style={{ fontSize: "var(--sm)", marginTop: '1.5rem' }}>
+                    Accuracy: {store.score} / {questions.length}
+                  </span>
+                  {toggleTimer && (
+                    <span style={{ fontSize: "var(--sm)", marginTop: '10px' }}>
+                      Finished in: {store.timer} Seconds
+                    </span>
+                  )}
                 </>
               )}
-            </div>
+              {!toggleFinalScore && !toggleTimer && !currentTresh &&
+                <div style={{textAlign:'center'}}>
+                  <h1>You have reached the end of this assessment. Thank you for your time!</h1>
+                </div>
+              }
+                  {(currentTresh || store.tresholds.length > 0) && (
+                    <>
+                      <div
+                        style={{
+                          fontSize: "var(--m)",
+                          margin: "20px 0",
+                          textAlign: "center",
+                        }}
+                        dangerouslySetInnerHTML={{
+                          __html:
+                            currentTresh?.success_message ||
+                            store.tresholds[0].fail_message,
+                        }}
+                      />
+                      {currentTresh?.success_next ||
+                        store.tresholds[0].fail_next ? (
+                        <a
+                          id="continueBtn"
+                          className='quiz_continue_button quiz_button'
+                          href={updateQueryStringWithCurrentURLParams(
+                            currentTresh?.success_next ||
+                            store.tresholds[0].fail_next,
+                            {
+                              leadData:
+                                session && session.formData
+                                  ? btoa(JSON.stringify(session.formData))
+                                  : undefined,
+                            }
+                          )}
+                          target="_parent">
+                          Continue to Next Step
+                        </a>
+                      ) : null}
+                    </>
+                  )}
+                </div>
           )}
-        </>
-      )}
-    </div>
-  );
+            </>
+          )}
+        </div>
+      );
 };
 
-export default QuizCard;
+      QuizCard.propTypes = {
+        onAnswer: PropTypes.func,
+      onFinish: PropTypes.func,
+      debug: PropTypes.bool,
+      toggleFinalScore: PropTypes.bool,
+      toggleTimer: PropTypes.bool,
+};
+
+      QuizCard.defaultProps = {
+        onAnswer: () => { },
+  onFinish: () => { },
+      debug: false,
+      toggleFinalScore: true,
+      toggleTimer: true,
+};
+
+      export default QuizCard;

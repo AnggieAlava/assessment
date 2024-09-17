@@ -1,6 +1,7 @@
-import { Fragment, useEffect, useState } from "react";
+import { useState } from "react";
 import styles from "@styles/leadform.module.css";
 import { capitalize } from "src/util/index"
+import PropTypes from 'prop-types';
 
 const validators = {
     email: function validateEmail(email) {
@@ -24,7 +25,7 @@ const formatters = {
     }
 }
 
-const LeadForm = ({ onSubmit, extraFields=[] }) => {
+const LeadForm = ({ onSubmit, extraFields }) => {
 
     const [data, setData] = useState({});
     const [alert, setAlert] = useState(false);
@@ -72,5 +73,22 @@ const LeadForm = ({ onSubmit, extraFields=[] }) => {
     </div>
 
 }
+
+LeadForm.propTypes = {
+    onSubmit: PropTypes.func.isRequired,
+    extraFields: PropTypes.arrayOf(
+        PropTypes.shape({
+            name: PropTypes.string.isRequired,
+            type: PropTypes.string,
+            placeholder: PropTypes.string,
+            required: PropTypes.bool,
+            value: PropTypes.string,
+        })
+    ),
+};
+
+LeadForm.defaultProps = {
+    extraFields: [],
+};
 
 export default LeadForm;

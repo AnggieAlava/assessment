@@ -1,5 +1,3 @@
-import { startTransition } from "react"
-
 export const types = {
   setScore: "score - puntos",
   setQuesions: "quiz - prueba",

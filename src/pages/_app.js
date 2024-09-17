@@ -1,10 +1,17 @@
 import "../../styles/globals.css";
+import "../../styles/defaultTheme.css"
 import StoreProvider from "../store/StoreProvider";
+import { Lato } from 'next/font/google';
+
+
+const lato = Lato({ weight: '400', subsets: ['latin'] })
 
 function MyApp({ Component, pageProps }) {
   return (
     <StoreProvider>
-      <Component {...pageProps} />
+      <div className={lato.className}>
+        <Component {...pageProps} />
+      </div>
     </StoreProvider>
   );
 }

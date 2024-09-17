@@ -1,0 +1,133 @@
+.quiz_wrapper {
+    width: 50.5rem;
+    margin: 2rem 0 0 0;
+    padding: 2rem;
+    border-radius: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+}
+
+.quiz_button {
+    margin: 1rem;
+    text-align: left;
+    color: white;
+    background-color: #0097ce;
+    text-decoration: none;
+    border: 1px solid #eaeaea;
+    border-radius: 5px;
+    transition: color 0.15s ease, border-color 0.15s ease;
+    text-align: center;
+    cursor: pointer;
+}
+
+.quiz_start_button {
+    padding: 0 2rem;
+}
+
+.quiz_continue_button {
+    padding: 0.5rem 2rem;
+}
+
+.quiz_start_button:hover {
+    color: #ffffff;
+    border-color: #84b1e4;
+}
+
+.timer {
+    background-color: #0191c8;
+    padding: 0 8px;
+    border-radius: 20px;
+    text-wrap: nowrap;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.progress {
+    background: #A4FFBD;
+    color: #25BF6C;
+    padding: 5px 8px;
+    border-radius: 20px;
+    text-wrap: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.buttonTextSelector {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 0;
+}
+
+.quiz-card{
+    width: 100%;
+}
+
+.quiz_card_option,
+.campusCard {
+    position: relative;
+    padding: 1rem;
+    text-align: left;
+    color: #0097CF;
+    height: -webkit-fill-available;
+    background: #fff;
+    text-decoration: none;
+    border: 1px solid #eaeaea;
+    border-radius: 10px;
+    transition: color 0.15s ease, border-color 0.15s ease;
+    width: auto;
+    width: 100%;
+    cursor: pointer;
+}
+
+.quiz_card_option:hover,
+.card:hover,
+.campusCard:hover,
+.quiz_card_option:active,
+.card:active,
+.campusCard:active {
+    color: #0070f3;
+    border-color: #0070f3;
+}
+
+@media (max-width: 811px) {
+    .quiz_wrapper {
+        width: 45rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .quiz_wrapper {
+        width: 90%;
+    }
+
+    .quiz_card_option {
+        padding: 0.9rem;
+        height: auto;
+    }
+}
+
+@media (max-width: 470px) {
+    .quiz_wrapper {
+        padding: 0.5rem;
+    }
+
+    .timer {
+        max-width: 200px;
+        margin: 0 auto;
+    }
+
+    .progress {
+        max-width: 200px;
+        margin: 0 auto;
+    }
+
+    .buttonTextSelector {
+        font-size: 16px;
+    }
+}
