@@ -35,6 +35,8 @@ const QuizSlug = () => {
     campaign,
     medium,
     source,
+    conversion_url,
+    landing_url,
     email = null,
     layout, //layout:string
     threshold_id,
@@ -61,7 +63,7 @@ const QuizSlug = () => {
             academy,
             assessment: quiz.id,
             owner_email: formData?.email,
-            conversion_info: { campaign, source, medium, ...formData },
+            conversion_info: { campaign, source, medium, conversion_url, landing_url, ...formData },
           }),
         }
       );
@@ -262,7 +264,7 @@ const QuizSlug = () => {
       if (time && time.toLowerCase() === "false") setToggleTimer(false);
       if (score && score.toLowerCase() === "false") setToggleFinalScore(false);
     }
-  }, [academy, time, score, source, campaign, medium, email]);
+  }, [academy, time, score, source, campaign, medium, conversion_url, landing_url, email]);
 
   useEffect(() => {
     const getLayout = async () => {
