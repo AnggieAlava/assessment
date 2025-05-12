@@ -426,7 +426,7 @@ const QuizSlug = () => {
             <div className='quiz_wrapper'>
               <Heading
                 className={styles.quiz_title}
-                title={`Quizz: ${quiz?.title}`}
+                title={`Quiz: ${quiz?.title}`}
                 iconPath={codeIconPath}
                 iconWidth={32}
                 iconHeight={23}
@@ -454,7 +454,7 @@ const QuizSlug = () => {
             <>
               <Heading
                 className={styles.quiz_title}
-                title={`Quizz: ${quiz?.title}`}
+                title={`Quiz: ${quiz?.title}`}
                 iconPath={codeIconPath}
                 iconWidth={32}
                 iconHeight={23}

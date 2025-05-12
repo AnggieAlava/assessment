@@ -231,7 +231,7 @@ const QuizCard = ({ onAnswer, onFinish, toggleFinalScore, toggleTimer, debug }) 
                   margin: "10rem 10% 20px 10%",
                   textAlign: "center",
                 }}>
-                This quizz does not have any questions to answer :c
+                This quiz does not have any questions to answer :c
               </span>
               {isEmbedded === false && (
                 <span
@@ -274,67 +274,67 @@ const QuizCard = ({ onAnswer, onFinish, toggleFinalScore, toggleTimer, debug }) 
                 </>
               )}
               {!toggleFinalScore && !toggleTimer && !currentTresh &&
-                <div style={{textAlign:'center'}}>
+                <div style={{ textAlign: 'center' }}>
                   <h1>You have reached the end of this assessment. Thank you for your time!</h1>
                 </div>
               }
-                  {(currentTresh || store.tresholds.length > 0) && (
-                    <>
-                      <div
-                        style={{
-                          fontSize: "var(--m)",
-                          margin: "20px 0",
-                          textAlign: "center",
-                        }}
-                        dangerouslySetInnerHTML={{
-                          __html:
-                            currentTresh?.success_message ||
-                            store.tresholds[0].fail_message,
-                        }}
-                      />
-                      {currentTresh?.success_next ||
-                        store.tresholds[0].fail_next ? (
-                        <a
-                          id="continueBtn"
-                          className='quiz_continue_button quiz_button'
-                          href={updateQueryStringWithCurrentURLParams(
-                            currentTresh?.success_next ||
-                            store.tresholds[0].fail_next,
-                            {
-                              leadData:
-                                session && session.formData
-                                  ? btoa(JSON.stringify(session.formData))
-                                  : undefined,
-                            }
-                          )}
-                          target="_parent">
-                          Continue to Next Step
-                        </a>
-                      ) : null}
-                    </>
-                  )}
-                </div>
+              {(currentTresh || store.tresholds.length > 0) && (
+                <>
+                  <div
+                    style={{
+                      fontSize: "var(--m)",
+                      margin: "20px 0",
+                      textAlign: "center",
+                    }}
+                    dangerouslySetInnerHTML={{
+                      __html:
+                        currentTresh?.success_message ||
+                        store.tresholds[0].fail_message,
+                    }}
+                  />
+                  {currentTresh?.success_next ||
+                    store.tresholds[0].fail_next ? (
+                    <a
+                      id="continueBtn"
+                      className='quiz_continue_button quiz_button'
+                      href={updateQueryStringWithCurrentURLParams(
+                        currentTresh?.success_next ||
+                        store.tresholds[0].fail_next,
+                        {
+                          leadData:
+                            session && session.formData
+                              ? btoa(JSON.stringify(session.formData))
+                              : undefined,
+                        }
+                      )}
+                      target="_parent">
+                      Continue to Next Step
+                    </a>
+                  ) : null}
+                </>
+              )}
+            </div>
           )}
-            </>
-          )}
-        </div>
-      );
+        </>
+      )}
+    </div>
+  );
 };
 
-      QuizCard.propTypes = {
-        onAnswer: PropTypes.func,
-      onFinish: PropTypes.func,
-      debug: PropTypes.bool,
-      toggleFinalScore: PropTypes.bool,
-      toggleTimer: PropTypes.bool,
+QuizCard.propTypes = {
+  onAnswer: PropTypes.func,
+  onFinish: PropTypes.func,
+  debug: PropTypes.bool,
+  toggleFinalScore: PropTypes.bool,
+  toggleTimer: PropTypes.bool,
 };
 
-      QuizCard.defaultProps = {
-        onAnswer: () => { },
+QuizCard.defaultProps = {
+  onAnswer: () => { },
   onFinish: () => { },
-      debug: false,
-      toggleFinalScore: true,
-      toggleTimer: true,
+  debug: false,
+  toggleFinalScore: true,
+  toggleTimer: true,
 };
 
-      export default QuizCard;
+export default QuizCard;
