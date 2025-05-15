@@ -290,7 +290,7 @@ const QuizCard = ({ onAnswer, onFinish, toggleFinalScore, toggleTimer, debug }) 
                     dangerouslySetInnerHTML={{
                       __html: customEnding ?
                         (currentTresh ? currentTresh.success_message :
-                          "<h1>You have reached the end of this assessment. Thank you for your time!</h1>") :
+                          "<h3>You have reached the end of this assessment. Thank you for your time!</h3>") :
                         (currentTresh?.success_message || store.tresholds[0].fail_message),
                     }}
                   />
