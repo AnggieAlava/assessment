@@ -17,7 +17,7 @@ import { timerIconPath } from "src/common/components/paths/timerIcon";
 import QuestionContent from "./QuestionContent";
 import PropTypes from 'prop-types'
 
-const QuizCard = ({ onAnswer, onFinish, toggleFinalScore, toggleTimer, debug }) => {
+const QuizCard = ({ onAnswer, onFinish, toggleFinalScore, toggleTimer, debug, slug }) => {
   const [currentTresh, setCurrentTresh] = useState(null);
   const [store, dispatch] = useContext(StoreContext);
   const session = getSession();
@@ -25,6 +25,9 @@ const QuizCard = ({ onAnswer, onFinish, toggleFinalScore, toggleTimer, debug }) 
   const currentQuestion = store.currentQuestion;
   const router = useRouter();
   const isEmbedded = getQueryString("embedded") === "true";
+
+  const isMountSinaiEnglish = session?.formData?.programs === "mount-sinai-english";
+  const isEnglish5 = slug === "english-5";
 
   const getRandom = (type) => {
     const index = Math.floor(Math.random() * store.templates[type].length);
@@ -254,7 +257,7 @@ const QuizCard = ({ onAnswer, onFinish, toggleFinalScore, toggleTimer, debug }) 
                 flexDirection: "column",
                 alignItems: "center",
               }}>
-              {toggleFinalScore && (
+              {toggleFinalScore && !isMountSinaiEnglish && (
                 <>
                   <p style={{ fontSize: "var(--sm)" }}>Your Score</p>
                   <CircleProgressBar
@@ -273,12 +276,24 @@ const QuizCard = ({ onAnswer, onFinish, toggleFinalScore, toggleTimer, debug }) 
                   )}
                 </>
               )}
-              {!toggleFinalScore && !toggleTimer && !currentTresh &&
+              {!toggleFinalScore && !toggleTimer && !currentTresh && !isMountSinaiEnglish && (
                 <div style={{ textAlign: 'center' }}>
                   <h1>You have reached the end of this assessment. Thank you for your time!</h1>
                 </div>
-              }
-              {(currentTresh || store.tresholds.length > 0) && (
+              )}
+              {isMountSinaiEnglish ? (
+                <div style={{ textAlign: 'center', margin: "20px 0" }}>
+                  {isEnglish5 ? (
+                    <h1>
+                      Thank you for completing the exam. One of our advisors will contact you shortly.
+                    </h1>
+                  ) : (
+                    <h1>
+                      You have reached the end of this assessment. Thank you for your time!
+                    </h1>
+                  )}
+                </div>
+              ) : (currentTresh || store.tresholds.length > 0) && (
                 <>
                   <div
                     style={{
@@ -327,6 +342,7 @@ QuizCard.propTypes = {
   debug: PropTypes.bool,
   toggleFinalScore: PropTypes.bool,
   toggleTimer: PropTypes.bool,
+  slug: PropTypes.string,
 };
 
 QuizCard.defaultProps = {
@@ -335,6 +351,7 @@ QuizCard.defaultProps = {
   debug: false,
   toggleFinalScore: true,
   toggleTimer: true,
+  slug: '',
 };
 
 export default QuizCard;

@@ -46,6 +46,36 @@ const QuizSlug = () => {
   // If coming from a previous assessment, here we have the conversion info
   const { leadData } = router.query;
 
+  useEffect(() => {
+    console.log("User quiz data from URL query params:", router.query);
+  }, [router.query]);
+
+  // New useEffect specifically for processing and logging leadData
+  useEffect(() => {
+    if (router.query.leadData) {
+      try {
+        const decodedLeadData = atob(router.query.leadData); // Assuming atob is globally available
+        console.log("Decoded leadData string:", decodedLeadData);
+
+        const parsedLeadDataJson = JSON.parse(decodedLeadData);
+        console.log("Parsed leadData (conversion_info from URL):", parsedLeadDataJson);
+
+        const programsValue = parsedLeadDataJson.programs;
+        console.log("Extracted 'programs' from leadData:", programsValue);
+
+        if (programsValue === "mount-sinai-english") {
+          console.log("Condition met: 'programs' is 'mount-sinai-english'");
+        } else {
+          console.log("Condition not met: 'programs' is not 'mount-sinai-english' or not found. Value:", programsValue);
+        }
+      } catch (e) {
+        console.error("Error processing leadData:", e);
+      }
+    } else {
+      console.log("leadData not found in URL query params.");
+    }
+  }, [router.query.leadData]); // Dependency array ensures this runs when leadData changes
+
   const createUserAssessment = async (formData = null) => {
     if (isAnon && isAnon != "false") return false;
     try {
@@ -468,6 +498,7 @@ const QuizSlug = () => {
                   toggleFinalScore={toggleFinalScore}
                   toggleTimer={toggleTimer}
                   debug={debug == "true"}
+                  slug={slug}
                 />
               </div>
             </>
