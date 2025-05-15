@@ -25,6 +25,7 @@ const QuizCard = ({ onAnswer, onFinish, toggleFinalScore, toggleTimer, debug }) 
   const currentQuestion = store.currentQuestion;
   const router = useRouter();
   const isEmbedded = getQueryString("embedded") === "true";
+  const customEnding = getQueryString("custom_ending") === "true";
 
   const getRandom = (type) => {
     const index = Math.floor(Math.random() * store.templates[type].length);
@@ -254,7 +255,7 @@ const QuizCard = ({ onAnswer, onFinish, toggleFinalScore, toggleTimer, debug }) 
                 flexDirection: "column",
                 alignItems: "center",
               }}>
-              {toggleFinalScore && (
+              {toggleFinalScore && !customEnding && (
                 <>
                   <p style={{ fontSize: "var(--sm)" }}>Your Score</p>
                   <CircleProgressBar
@@ -273,7 +274,7 @@ const QuizCard = ({ onAnswer, onFinish, toggleFinalScore, toggleTimer, debug }) 
                   )}
                 </>
               )}
-              {!toggleFinalScore && !toggleTimer && !currentTresh &&
+              {!toggleFinalScore && !toggleTimer && !currentTresh && !customEnding &&
                 <div style={{ textAlign: 'center' }}>
                   <h1>You have reached the end of this assessment. Thank you for your time!</h1>
                 </div>
@@ -287,19 +288,20 @@ const QuizCard = ({ onAnswer, onFinish, toggleFinalScore, toggleTimer, debug }) 
                       textAlign: "center",
                     }}
                     dangerouslySetInnerHTML={{
-                      __html:
-                        currentTresh?.success_message ||
-                        store.tresholds[0].fail_message,
+                      __html: customEnding ?
+                        (currentTresh ? currentTresh.success_message :
+                          "<h1>You have reached the end of this assessment. Thank you for your time!</h1>") :
+                        (currentTresh?.success_message || store.tresholds[0].fail_message),
                     }}
                   />
-                  {currentTresh?.success_next ||
-                    store.tresholds[0].fail_next ? (
+                  {(customEnding ? currentTresh?.success_next : (currentTresh?.success_next || store.tresholds[0].fail_next)) ? (
                     <a
                       id="continueBtn"
                       className='quiz_continue_button quiz_button'
                       href={updateQueryStringWithCurrentURLParams(
-                        currentTresh?.success_next ||
-                        store.tresholds[0].fail_next,
+                        customEnding ?
+                          (currentTresh?.success_next || "") :
+                          (currentTresh?.success_next || store.tresholds[0].fail_next),
                         {
                           leadData:
                             session && session.formData
