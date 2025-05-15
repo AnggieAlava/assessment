@@ -282,7 +282,7 @@ const QuizCard = ({ onAnswer, onFinish, toggleFinalScore, toggleTimer, debug, sl
                 </div>
               )}
               {isMountSinaiEnglish ? (
-                <div style={{ textAlign: 'center', margin: "20px 0" }}>
+                <div style={{ textAlign: 'center' }}>
                   {isEnglish5 ? (
                     <h1>
                       Thank you for completing the exam. One of our advisors will contact you shortly.
